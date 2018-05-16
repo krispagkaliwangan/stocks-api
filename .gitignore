@@ -3,7 +3,7 @@
 #---------------------------------------#
 
 # Maven
-target/
+/target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -34,8 +34,8 @@ hs_err_pid*
 
 # misc
 *.log
-log/
-logs/
+/log/
+/logs/
 
 
 #---------------------------------------#
