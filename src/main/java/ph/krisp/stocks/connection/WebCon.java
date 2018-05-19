@@ -121,7 +121,7 @@ public class WebCon {
 		}
 		
 		try {
-			Document stockDoc = getDocument(cookies);
+			Document stockDoc = getDocument(REAL_TIME_MON_URL, cookies);
 			
 			// extract all stock codes
 			Elements table = stockDoc.body()
@@ -179,13 +179,15 @@ public class WebCon {
 	/**
 	 * Gets the document using the authorized cookies
 	 * 
+	 * @param url
+	 *            the website url
 	 * @param cookies
 	 *            the authorized cookies
 	 * @return the document
 	 * @throws IOException
 	 */
-	private static Document getDocument(Map<String, String> cookies) throws IOException {
-		return Jsoup.connect(REAL_TIME_MON_URL)  
+	private static Document getDocument(String url, Map<String, String> cookies) throws IOException {
+		return Jsoup.connect(url)  
 		         .cookies(cookies)  
 		         .userAgent(USER_AGENT)  
 		         .get();
