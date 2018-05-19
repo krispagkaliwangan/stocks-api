@@ -69,3 +69,8 @@ local.properties
  
 # PDT-specific
 .buildpath
+
+######################
+# stock-api
+######################
+config.properties
