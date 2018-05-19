@@ -74,3 +74,4 @@ local.properties
 # stock-api
 ######################
 config.properties
+*.log
