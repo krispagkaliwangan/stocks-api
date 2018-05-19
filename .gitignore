@@ -73,5 +73,7 @@ local.properties
 ######################
 # stock-api
 ######################
+
 config.properties
 *.log
+krisp/stock-api/logs/
