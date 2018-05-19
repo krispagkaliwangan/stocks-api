@@ -11,6 +11,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import ph.krisp.stocks.utils.Utils;
 
@@ -116,7 +117,13 @@ public class WebConnection {
 		try {
 			Document stockDoc = getDocument(cookies);
 			
-			System.out.println(stockDoc.html());
+			// extract all stock codes
+			Elements table = stockDoc.body().select("table > #StockQuoteTable > tbody > tr");
+			
+			
+			
+			
+			System.out.println(table.size());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
