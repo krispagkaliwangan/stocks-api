@@ -102,7 +102,7 @@ public class WebConnection {
 	 * Retrieves all the stock codes in the real time monitoring page of the Investagrams
 	 * 
 	 * 
-	 * @param cookies
+	 * @param cookies the authorized cookies
 	 * @return
 	 */
 	public static Set<String> getAllStockCodes(Map<String, String> cookies) {
@@ -114,17 +114,29 @@ public class WebConnection {
 		}
 		
 		try {
-			Document st = Jsoup.connect(REAL_TIME_MON_URL)  
-			         .cookies(cookies)  
-			         .userAgent(USER_AGENT)  
-			         .get();
+			Document stockDoc = getDocument(cookies);
 			
-			System.out.println(st.html());
+			System.out.println(stockDoc.html());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		
 		return stockCodes;
+	}
+	
+	/**
+	 * Gets the document using the authorized cookies
+	 * 
+	 * @param cookies
+	 *            the authorized cookies
+	 * @return the document
+	 * @throws IOException
+	 */
+	private static Document getDocument(Map<String, String> cookies) throws IOException {
+		return Jsoup.connect(REAL_TIME_MON_URL)  
+		         .cookies(cookies)  
+		         .userAgent(USER_AGENT)  
+		         .get();
 	}
 }
