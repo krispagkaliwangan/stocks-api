@@ -1,6 +1,7 @@
 package ph.krisp.stocks.connection;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,8 +12,12 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import ph.krisp.stocks.utils.Utils;
+import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.utils.CalcUtils;
+import ph.krisp.stocks.utils.WebUtils;
 
 /**
  * Class for connecting to the web app for scraping
@@ -60,8 +65,8 @@ public class WebConnection {
     		String asyncPost = "true";
     		String loginButton = "Login";
     		
-    		String username = Utils.getUsername();
-    		String password = Utils.getPassword();
+    		String username = WebUtils.getUsername();
+    		String password = WebUtils.getPassword();
     		
     		Map<String, String> formData = new HashMap<String, String>();
     		formData.put("ScriptManager", scriptManager);
@@ -99,32 +104,90 @@ public class WebConnection {
 	}
 	
 	/**
-	 * Retrieves all the stock codes in the real time monitoring page of the Investagrams
-	 * 
+	 * Retrieves all the stock codes in the real time monitoring page of the
+	 * Investagrams with their corresponding information
 	 * 
 	 * @param cookies
-	 * @return
+	 *            the authorized cookies
+	 * @return a map containing all the stock codes paired to its stock
+	 *         information
 	 */
-	public static Set<String> getAllStockCodes(Map<String, String> cookies) {
-		Set<String> stockCodes = new HashSet<>();
+	public static Map<String, Stock> getAllStockInfo(Map<String, String> cookies) {
+		Map<String, Stock> stockInfo = new HashMap<>();
 		
 		// check if cookies are valid
 		if(cookies.size() == 0 || cookies == null) {
-			return stockCodes;
+			return stockInfo;
 		}
 		
 		try {
-			Document st = Jsoup.connect(REAL_TIME_MON_URL)  
-			         .cookies(cookies)  
-			         .userAgent(USER_AGENT)  
-			         .get();
+			Document stockDoc = getDocument(cookies);
 			
-			System.out.println(st.html());
+			// extract all stock codes
+			Elements table = stockDoc.body()
+					.select("#StockQuoteTable > tbody > tr");
+
+			for (Element row : table) {
+				Stock stock = parseStockInfo(row);
+				stockInfo.put(stock.getCode(), stock);
+			}
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		
-		return stockCodes;
+		return stockInfo;
+	}
+	
+	/**
+	 * Parses all stock information for the particular row
+	 * 
+	 * @param row
+	 *            the row to be parsed for a particular stock
+	 * @return the object containing the stock information
+	 */
+	private static Stock parseStockInfo(Element row) {
+		Elements rowData = row.select("td");
+		
+		// 0 - ignore
+		
+		// 1 - stock code
+		String code = rowData.get(1).select("a").first().ownText();
+		// 2 - close
+		BigDecimal close = CalcUtils.parseNumber(rowData.get(2).ownText());
+		// 3 - change
+		BigDecimal change = CalcUtils.parseNumber(rowData.get(3).ownText());
+		// 4 - %change
+		BigDecimal percentChange = CalcUtils.parseNumber(rowData.get(4).ownText())
+									.divide(new BigDecimal("100"));
+		// 5 - open
+		BigDecimal open = CalcUtils.parseNumber(rowData.get(5).ownText());
+		// 6 - low
+		BigDecimal low = CalcUtils.parseNumber(rowData.get(6).ownText());
+		// 7 - high
+		BigDecimal high = CalcUtils.parseNumber(rowData.get(7).ownText());
+		// 8 - previous close
+		BigDecimal previousClose = CalcUtils.parseNumber(rowData.get(8).ownText());
+		// 9 - volume
+		BigDecimal volume = CalcUtils.parseNumber(rowData.get(9).attr("data-sort")).stripTrailingZeros();
+		// 10 - value
+		BigDecimal value = CalcUtils.parseNumber(rowData.get(10).attr("data-sort")).stripTrailingZeros();
+
+		return new Stock(code, close, change, percentChange, open, low, high, previousClose, volume, value);
+	}
+	
+	/**
+	 * Gets the document using the authorized cookies
+	 * 
+	 * @param cookies
+	 *            the authorized cookies
+	 * @return the document
+	 * @throws IOException
+	 */
+	private static Document getDocument(Map<String, String> cookies) throws IOException {
+		return Jsoup.connect(REAL_TIME_MON_URL)  
+		         .cookies(cookies)  
+		         .userAgent(USER_AGENT)  
+		         .get();
 	}
 }

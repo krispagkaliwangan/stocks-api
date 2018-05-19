@@ -7,16 +7,16 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Various utility methods
+ * Various web utility methods
  * 
  * @author kris.pagkaliwangan
  *
  */
-public class Utils {
+public class WebUtils {
 
 	private static Properties loginProperties = loadLoginProperties();
 	
-	private Utils() {}
+	private WebUtils() {}
 	
 	public static String getUsername() {
 		return loginProperties.getProperty("username");
@@ -34,7 +34,7 @@ public class Utils {
 	private static Properties loadLoginProperties() {
 		Properties prop = new Properties();
 		
-		try (InputStream input = Utils.class.getClassLoader().getResourceAsStream("config.properties")){
+		try (InputStream input = WebUtils.class.getClassLoader().getResourceAsStream("config.properties")){
 			
 			prop.load(input);
 			prop.getProperty("username");
