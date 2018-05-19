@@ -12,6 +12,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 
+import ph.krisp.stocks.utils.Utils;
+
 /**
  * Class for connecting to the web app for scraping
  * 
@@ -58,8 +60,8 @@ public class WebConnection {
     		String asyncPost = "true";
     		String loginButton = "Login";
     		
-    		String username = "";
-    		String password = "";
+    		String username = Utils.getUsername();
+    		String password = Utils.getPassword();
     		
     		Map<String, String> formData = new HashMap<String, String>();
     		formData.put("ScriptManager", scriptManager);
