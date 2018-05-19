@@ -3,7 +3,7 @@ package ph.krisp.stocks.utils;
 import java.math.BigDecimal;
 
 /**
- * Various utility methods
+ * Various calculation methods
  * 
  * @author kris.pagkaliwangan
  *
