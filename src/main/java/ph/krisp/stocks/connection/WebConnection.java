@@ -109,7 +109,7 @@ public class WebConnection {
 	 * 
 	 * @param cookies
 	 *            the authorized cookies
-	 * @return a map containimg all the stock codes paired to its stock
+	 * @return a map containing all the stock codes paired to its stock
 	 *         information
 	 */
 	public static Map<String, Stock> getAllStockInfo(Map<String, String> cookies) {
@@ -128,16 +128,11 @@ public class WebConnection {
 					.select("#StockQuoteTable > tbody > tr");
 
 			for (Element row : table) {
-				
-				
 				Stock stock = parseStockInfo(row);
 				stockInfo.put(stock.getCode(), stock);
-				System.out.println("stock=" + stock.getCode());
 			}
 			
-			System.out.println("table size = " + table.size());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		
@@ -159,24 +154,24 @@ public class WebConnection {
 		// 1 - stock code
 		String code = rowData.get(1).select("a").first().ownText();
 		// 2 - close
-		BigDecimal close = CalcUtils.parseBigDecimal(rowData.get(2).ownText());
+		BigDecimal close = CalcUtils.parseNumber(rowData.get(2).ownText());
 		// 3 - change
-		BigDecimal change = CalcUtils.parseBigDecimal(rowData.get(3).ownText());
+		BigDecimal change = CalcUtils.parseNumber(rowData.get(3).ownText());
 		// 4 - %change
-		BigDecimal percentChange = CalcUtils.parseBigDecimal(rowData.get(4).ownText())
+		BigDecimal percentChange = CalcUtils.parseNumber(rowData.get(4).ownText())
 									.divide(new BigDecimal("100"));
 		// 5 - open
-		BigDecimal open = CalcUtils.parseBigDecimal(rowData.get(5).ownText());
+		BigDecimal open = CalcUtils.parseNumber(rowData.get(5).ownText());
 		// 6 - low
-		BigDecimal low = CalcUtils.parseBigDecimal(rowData.get(6).ownText());
+		BigDecimal low = CalcUtils.parseNumber(rowData.get(6).ownText());
 		// 7 - high
-		BigDecimal high = CalcUtils.parseBigDecimal(rowData.get(7).ownText());
+		BigDecimal high = CalcUtils.parseNumber(rowData.get(7).ownText());
 		// 8 - previous close
-		BigDecimal previousClose = CalcUtils.parseBigDecimal(rowData.get(8).ownText());
+		BigDecimal previousClose = CalcUtils.parseNumber(rowData.get(8).ownText());
 		// 9 - volume
-		BigDecimal volume = CalcUtils.parseBigDecimal(rowData.get(9).attr("data-sort")).stripTrailingZeros();
+		BigDecimal volume = CalcUtils.parseNumber(rowData.get(9).attr("data-sort")).stripTrailingZeros();
 		// 10 - value
-		BigDecimal value = CalcUtils.parseBigDecimal(rowData.get(10).attr("data-sort")).stripTrailingZeros();
+		BigDecimal value = CalcUtils.parseNumber(rowData.get(10).attr("data-sort")).stripTrailingZeros();
 
 		return new Stock(code, close, change, percentChange, open, low, high, previousClose, volume, value);
 	}

@@ -12,8 +12,13 @@ public class CalcUtils {
 
 	private CalcUtils() {}
 	
-	public static BigDecimal parseBigDecimal(String text) {
-		System.out.println("\t"+text.replaceAll("[\\,%]", ""));
+	/**
+	 * Removes % and comma in the String given
+	 * 
+	 * @param text
+	 * @return text with % and comma replaced by empty character
+	 */
+	public static BigDecimal parseNumber(String text) {
 		return new BigDecimal(text.replaceAll("[\\,%]", ""));
 	}
 	

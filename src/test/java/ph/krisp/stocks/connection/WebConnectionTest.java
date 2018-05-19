@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.utils.JsonUtils;
 
 public class WebConnectionTest {
 
@@ -23,6 +24,23 @@ public class WebConnectionTest {
 	public void testGetAllStockCodes() {
 		Map<String, Stock> stockInfo = WebConnection.getAllStockInfo(cookies);
 		assertTrue(stockInfo.size() > 0);
+		
+		for(Stock s : stockInfo.values()) {
+			assertNotNull(s.getCode());
+			assertNotNull(s.getClose());
+			assertNotNull(s.getChange());
+			assertNotNull(s.getPercentChange());
+			assertNotNull(s.getOpen());
+			assertNotNull(s.getLow());
+			assertNotNull(s.getHigh());
+			assertNotNull(s.getPreviousClose());
+			assertNotNull(s.getVolume());
+			assertNotNull(s.getValue());
+		}
+		
+		System.out.println(JsonUtils.objectToJson(stockInfo));
+		System.out.println("size = " + stockInfo.size());
+		
 	}
 
 }
