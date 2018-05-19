@@ -11,6 +11,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ph.krisp.stocks.connection.WebConnection;
+
 /**
  * Hello world!
  *
@@ -22,7 +24,9 @@ public class App
 	
     public static void main( String[] args )
     {
-    	login();
+//    	login();
+//    	Map<String, String> cookies = WebConnection.login();
+    	WebConnection.getAllStockCodes(WebConnection.login());
         
     }
     
@@ -72,8 +76,7 @@ public class App
     		         .cookies(cookies)  
     		         .data(formData)  
     		         .method(Connection.Method.POST)  
-    		         .userAgent(USER_AGENT)  
-//    		         .followRedirects(true)
+    		         .userAgent(USER_AGENT)
     		         .execute(); 
 
     		cookies = homePage.cookies();
