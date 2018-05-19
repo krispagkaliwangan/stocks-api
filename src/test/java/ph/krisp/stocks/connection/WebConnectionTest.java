@@ -17,12 +17,12 @@ public class WebConnectionTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		cookies = WebConnection.login();
+		cookies = WebCon.login();
 	}
 
 	@Test
 	public void testGetAllStockCodes() {
-		Map<String, Stock> stockInfo = WebConnection.getAllStockInfo(cookies);
+		Map<String, Stock> stockInfo = WebCon.getAllStockInfo(cookies);
 		assertTrue(stockInfo.size() > 0);
 		
 		for(Stock s : stockInfo.values()) {

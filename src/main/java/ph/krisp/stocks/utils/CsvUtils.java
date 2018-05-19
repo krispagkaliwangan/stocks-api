@@ -1,5 +1,7 @@
 package ph.krisp.stocks.utils;
 
+import ph.krisp.stocks.model.Stock;
+
 /**
  * Various CSV file utility methods
  * 
@@ -8,4 +10,10 @@ package ph.krisp.stocks.utils;
  */
 public class CsvUtils {
 
+	private CsvUtils() {}
+	
+	public static void updateStockFile(Stock stock) {
+		
+	}
+	
 }
