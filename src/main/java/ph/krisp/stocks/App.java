@@ -25,8 +25,8 @@ public class App
     public static void main( String[] args )
     {
 //    	login();
-//    	Map<String, String> cookies = WebConnection.login();
-    	WebConnection.getAllStockCodes(WebConnection.login());
+    	Map<String, String> cookies = WebConnection.login();
+    	WebConnection.getAllStockCodes(cookies);
         
     }
     
