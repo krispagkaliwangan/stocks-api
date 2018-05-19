@@ -8,6 +8,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import ph.krisp.stocks.model.Stock;
+
 public class WebConnectionTest {
 
 	private Map<String, String> cookies;
@@ -19,8 +21,8 @@ public class WebConnectionTest {
 
 	@Test
 	public void testGetAllStockCodes() {
-		Set<String> stockCodes = WebConnection.getAllStockCodes(cookies);
-		assertTrue(stockCodes.size() > 0);
+		Map<String, Stock> stockInfo = WebConnection.getAllStockInfo(cookies);
+		assertTrue(stockInfo.size() > 0);
 	}
 
 }

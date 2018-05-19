@@ -26,7 +26,7 @@ public class App
     {
 
     	Map<String, String> cookies = WebConnection.login();
-    	WebConnection.getAllStockCodes(cookies);
+    	WebConnection.getAllStockInfo(cookies);
         
     }
     

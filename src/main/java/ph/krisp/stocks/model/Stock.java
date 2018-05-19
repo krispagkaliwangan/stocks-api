@@ -11,27 +11,32 @@ import java.math.BigDecimal;
 public class Stock {
 
 	private String code;
+	private BigDecimal close;
+	private BigDecimal change;
+	private BigDecimal percentChange;
 	private BigDecimal open;
 	private BigDecimal low;
 	private BigDecimal high;
-	private BigDecimal close;
 	private BigDecimal previousClose;
 	private BigDecimal volume;
 	private BigDecimal value;
 	
-	public Stock(String code, BigDecimal open, BigDecimal low,
-			BigDecimal high, BigDecimal close, BigDecimal previousClose,
-			BigDecimal volume, BigDecimal value) {
+	public Stock(String code, BigDecimal close, BigDecimal change,
+			BigDecimal percentChange, BigDecimal open, BigDecimal low,
+			BigDecimal high, BigDecimal previousClose, BigDecimal volume,
+			BigDecimal value) {
+		super();
 		this.code = code;
+		this.close = close;
+		this.change = change;
+		this.percentChange = percentChange;
 		this.open = open;
 		this.low = low;
 		this.high = high;
-		this.close = close;
 		this.previousClose = previousClose;
 		this.volume = volume;
 		this.value = value;
 	}
-	
 	public String getCode() {
 		return code;
 	}
@@ -57,10 +62,11 @@ public class Stock {
 		return value;
 	}
 	public BigDecimal getChange() {
-		return getClose().subtract(getPreviousClose());
+		return change;
 	}
 	public BigDecimal getPercentChange() {
-		return getChange().divide(getPreviousClose());
+		return percentChange;
 	}
+	
 	
 }
