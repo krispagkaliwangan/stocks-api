@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
@@ -19,6 +20,8 @@ import org.jsoup.nodes.Document;
  */
 public class WebConnection {
 
+	private static final Logger logger = Logger.getLogger("WebConnection");
+	
 	private static final String LOGIN_URL = "https://www.investagrams.com";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";  
 	private static final String REAL_TIME_MON_URL = "https://www.investagrams.com/Stock/RealTimeMonitoring";
@@ -32,7 +35,7 @@ public class WebConnection {
 	 * @return the cookies representing the login state
 	 */
 	public static Map<String, String> login() {
-		Map<String, String> cookies = null;
+		logger.info("Logging in...");
 		try {
 			// get login page
 			Response loginForm = Jsoup.connect(LOGIN_URL)
@@ -42,7 +45,7 @@ public class WebConnection {
 					.execute();
 			Document loginDoc = loginForm.parse();
 			// get cookies
-			cookies = loginForm.cookies();
+			Map<String, String> cookies = loginForm.cookies();
 			
 			// get formData variables
     		String scriptManager = "LoginUserControlPanel$LoginUpdatePanel|LoginUserControlPanel$LoginButton";
@@ -79,15 +82,18 @@ public class WebConnection {
    		         .userAgent(USER_AGENT)
    		         .execute(); 
     		
-    		// update cookies
-    		return homePage.cookies();
+    		if(homePage.body().contains("pageRedirect")) {
+    			// update cookies
+        		logger.info("Logging in successful!");
+        		return homePage.cookies();
+    		}
     		
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(cookies);
-		return cookies;
+		
+		logger.info("Login unsuccessful!");
+		return null;
 	}
 	
 	/**
