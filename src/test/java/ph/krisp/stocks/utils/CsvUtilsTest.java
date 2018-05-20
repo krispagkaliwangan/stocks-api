@@ -8,12 +8,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ph.krisp.stocks.connection.WebCon;
-import ph.krisp.stocks.model.StockInfo;
+import ph.krisp.stocks.model.StockRawInfo;
 
 public class CsvUtilsTest {
 
 	private Map<String, String> cookies;
-	private Map<String, StockInfo> stockInfo;
+	private Map<String, StockRawInfo> stockInfo;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -24,7 +24,7 @@ public class CsvUtilsTest {
 	@Test
 	public void test() {
 		
-		for(StockInfo s : stockInfo.values()) {
+		for(StockRawInfo s : stockInfo.values()) {
 			CsvUtils.updateStockFile(s);
 		}
 	}

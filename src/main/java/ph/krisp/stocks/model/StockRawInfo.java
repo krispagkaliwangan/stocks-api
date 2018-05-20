@@ -1,24 +1,35 @@
 package ph.krisp.stocks.model;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
- * Class containing stock information and analysis
+ * Class representation of a stock with information
+ * 
  * @author kris.pagkaliwangan
  *
  */
-public class Stock {
-
-	private String code;
-	private String date;
+public class StockRawInfo {
+	
 	private Map<String, String> info;
 	
-	private StockFundamentalAnalysis fa;
-	private StockTechnicalAnalysis ta;
+	/*
+		Last Price - 15.78
+		Change - 0.08
+		%Change - 0.51%
+		Previous Close - 15.70
+		Open - 15.80
+		Low - 15.54
+		High - 15.80
+		Average Price - 15.70
+		Volume - 15.4K
+		Value - 241.82K
+		Net Foreign - 6.22K
+	 */
 	
-	
-	
+	public StockRawInfo(Map<String, String> info) {
+		this.info = info;
+	}
+
 	public String getClose() {
 		return this.info.get("Last Price");
 	}
