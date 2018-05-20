@@ -8,6 +8,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import ph.krisp.stocks.model.Stock;
 import ph.krisp.stocks.model.StockRawInfo;
 import ph.krisp.stocks.utils.JsonUtils;
 
@@ -22,7 +23,7 @@ public class WebConnectionTest {
 
 	@Test
 	public void testGetAllStockCodes() {
-		Map<String, StockRawInfo> stockInfo = WebCon.getAllStockInfo(cookies);
+		Map<String, Stock> stockInfo = WebCon.getAllStockInfo(cookies);
 		assertTrue(stockInfo.size() > 0);
 		
 //		for(StockInfo s : stockInfo.values()) {

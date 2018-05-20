@@ -1,6 +1,7 @@
 package ph.krisp.stocks.connection;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jsoup.nodes.Document;
@@ -43,7 +44,7 @@ public class StockParser {
 	public static Map<String, String> parseStockInfo(Document doc) {
 		Elements table = doc.body().select(".col-xs-4 > table > tbody > tr");
 		
-		Map<String, String> info = new HashMap<>(); 
+		Map<String, String> info = new LinkedHashMap<>(); 
 		for(Element e : table) {
 			Element label = e.select("td").first().child(0);
 			Element data = e.select(".stock-price").first();
@@ -93,7 +94,7 @@ public class StockParser {
 	private static Map<String, String> parseAnalysis(Document doc, String cssQuery) {
 		Elements table = doc.body().select(cssQuery);
 		
-		Map<String, String> info = new HashMap<>(); 
+		Map<String, String> info = new LinkedHashMap<>(); 
 		for(int i=0; i<table.size()-2; i+=2){
 			String key = table.get(i).child(0).ownText().replace(":", "");
 			Element data;

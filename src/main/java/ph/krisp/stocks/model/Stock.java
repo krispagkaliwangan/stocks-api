@@ -15,9 +15,17 @@ public class Stock {
 	private Map<String, String> fundamentalAnalyis;
 	private Map<String, String> technicalAnalyis;
 
-	
-	
-	
+	public Stock(String code, String date,
+			Map<String, String> info,
+			Map<String, String> fundamentalAnalyis,
+			Map<String, String> technicalAnalyis) {
+		super();
+		this.code = code;
+		this.date = date;
+		this.info = info;
+		this.fundamentalAnalyis = fundamentalAnalyis;
+		this.technicalAnalyis = technicalAnalyis;
+	}
 	public String getClose() {
 		return this.info.get("Last Price");
 	}

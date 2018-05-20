@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ph.krisp.stocks.model.Stock;
 import ph.krisp.stocks.model.StockRawInfo;
 import ph.krisp.stocks.utils.CalcUtils;
 import ph.krisp.stocks.utils.JsonUtils;
@@ -117,11 +118,11 @@ public class WebCon {
 	 * @return a map containing all the stock codes paired to its stock
 	 *         information
 	 */
-	public static Map<String, StockRawInfo> getAllStockInfo(Map<String, String> cookies) {
+	public static Map<String, Stock> getAllStockInfo(Map<String, String> cookies) {
 		logger.info("Downloading stock data...");
 		long startTime = System.nanoTime();
 		
-		Map<String, StockRawInfo> stockInfo = new HashMap<>();
+		Map<String, Stock> stockInfo = new HashMap<>();
 		
 		// check if cookies are valid
 		if(cookies.size() == 0 || cookies == null) {
@@ -155,10 +156,16 @@ public class WebCon {
 				// add technical analysis here
 				Map<String, String> technicalAnalysis = StockParser.parseTechnicalAnalysis(stockDoc);
 //				System.out.println(JsonUtils.objectToJson(technicalAnalysis));
+				
+				
+				
 				// check historical info here
 				
+				// create object here
+				Stock stock = new Stock(stockCode, rawDate, info, fundamentalAnalysis, technicalAnalysis);
+
 				// update map
-				stockInfo.put(stockCode, null);
+				stockInfo.put(stockCode, stock);
 			}
 			
 		} catch (IOException e) {
