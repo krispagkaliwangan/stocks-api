@@ -15,7 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockInfo;
 import ph.krisp.stocks.utils.CalcUtils;
 import ph.krisp.stocks.utils.WebUtils;
 
@@ -32,6 +32,7 @@ public class WebCon {
 	private static final String LOGIN_URL = "https://www.investagrams.com";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";  
 	private static final String REAL_TIME_MON_URL = "https://www.investagrams.com/Stock/RealTimeMonitoring";
+	private static final String STOCK_URL = "https://www.investagrams.com/Stock/";
 	
 	private WebCon() {}
 	
@@ -112,8 +113,8 @@ public class WebCon {
 	 * @return a map containing all the stock codes paired to its stock
 	 *         information
 	 */
-	public static Map<String, Stock> getAllStockInfo(Map<String, String> cookies) {
-		Map<String, Stock> stockInfo = new HashMap<>();
+	public static Map<String, StockInfo> getAllStockInfo(Map<String, String> cookies) {
+		Map<String, StockInfo> stockInfo = new HashMap<>();
 		
 		// check if cookies are valid
 		if(cookies.size() == 0 || cookies == null) {
@@ -128,7 +129,16 @@ public class WebCon {
 					.select("#StockQuoteTable > tbody > tr");
 
 			for (Element row : table) {
-				Stock stock = parseStockInfo(row);
+				// add date here
+				StockInfo stock = parseStockInfo(row);
+				
+				// add fundamental analysis here
+				
+				// add technical analysis here
+				
+				// check historical info here
+				
+				// update map
 				stockInfo.put(stock.getCode(), stock);
 			}
 			
@@ -146,7 +156,7 @@ public class WebCon {
 	 *            the row to be parsed for a particular stock
 	 * @return the object containing the stock information
 	 */
-	private static Stock parseStockInfo(Element row) {
+	private static StockInfo parseStockInfo(Element row) {
 		Elements rowData = row.select("td");
 		
 		// 0 - ignore
@@ -173,7 +183,7 @@ public class WebCon {
 		// 10 - value
 		BigDecimal value = CalcUtils.parseNumber(rowData.get(10).attr("data-sort")).stripTrailingZeros();
 
-		return new Stock(code, close, change, percentChange, open, low, high, previousClose, volume, value);
+		return new StockInfo(code, close, change, percentChange, open, low, high, previousClose, volume, value);
 	}
 	
 	/**

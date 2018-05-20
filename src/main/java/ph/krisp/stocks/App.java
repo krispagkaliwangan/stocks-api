@@ -3,7 +3,7 @@ package ph.krisp.stocks;
 import java.util.Map;
 
 import ph.krisp.stocks.connection.WebCon;
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockInfo;
 
 /**
  * Main Class for the stock-api
@@ -17,7 +17,7 @@ public class App
     {
     	// logins and retrieves all stock information
     	Map<String, String> cookies = WebCon.login();
-    	Map<String, Stock> stockInfo = WebCon.getAllStockInfo(cookies);
+    	Map<String, StockInfo> stockInfo = WebCon.getAllStockInfo(cookies);
         
     }
     
