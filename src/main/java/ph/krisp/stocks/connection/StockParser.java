@@ -77,6 +77,19 @@ public class StockParser {
 		return parseAnalysis(doc, "#TechnicalAnalysisContent > div > .col-xs-12 > div > table > tbody > tr > td");
 	}
 
+	/**
+	 * Extracts all elements from the document using the cssQuery. Loops through
+	 * the extracted elements sequentially. The odd numbered elements are the key
+	 * or label, and the even numbered elements are the data. The data can be
+	 * inside a span or the text of the element. If the cssQuery for the span
+	 * (stock-price) is null, the data is usually already in the text of the
+	 * element.
+	 * 
+	 * @param doc
+	 * @param cssQuery
+	 * @return a key-value pairs containing the label and the data for that
+	 *         label
+	 */
 	private static Map<String, String> parseAnalysis(Document doc, String cssQuery) {
 		Elements table = doc.body().select(cssQuery);
 		
@@ -94,11 +107,6 @@ public class StockParser {
 			info.put(key, value);
 		}
 		return info;
-	}
-	
-	public static StockTechnicalAnalysis parseStockTechnicalAnalysis() {
-		
-		return null;
 	}
 	
 }

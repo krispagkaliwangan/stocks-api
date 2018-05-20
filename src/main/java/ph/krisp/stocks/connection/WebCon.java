@@ -96,7 +96,7 @@ public class WebCon {
     		
     		if(homePage.body().contains("pageRedirect")) {
     			// update cookies
-        		logger.info("Logging in successful!");
+        		logger.info("Login successful!");
         		return homePage.cookies();
     		}
     		
@@ -118,6 +118,9 @@ public class WebCon {
 	 *         information
 	 */
 	public static Map<String, StockRawInfo> getAllStockInfo(Map<String, String> cookies) {
+		logger.info("Downloading stock data...");
+		long startTime = System.nanoTime();
+		
 		Map<String, StockRawInfo> stockInfo = new HashMap<>();
 		
 		// check if cookies are valid
@@ -137,8 +140,8 @@ public class WebCon {
 				String stockUrl = STOCK_BASE_URL + stockCode;
 				
 				// parse page here
+				logger.info("Downloading " + stockUrl);
 				Document stockDoc = getDocument(stockUrl, cookies);
-				System.out.println(stockUrl);
 				
 				// add date here
 				String rawDate = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
@@ -151,7 +154,7 @@ public class WebCon {
 //				System.out.println(JsonUtils.objectToJson(fundamentalAnalysis));
 				// add technical analysis here
 				Map<String, String> technicalAnalysis = StockParser.parseTechnicalAnalysis(stockDoc);
-				System.out.println(JsonUtils.objectToJson(technicalAnalysis));
+//				System.out.println(JsonUtils.objectToJson(technicalAnalysis));
 				// check historical info here
 				
 				// update map
@@ -161,7 +164,8 @@ public class WebCon {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-		
+		logger.info("Stock data downloaded. Total=" + stockInfo.size() + 
+				" Elapsed: " + (System.nanoTime()-startTime)/1000000000 + "s");
 		return stockInfo;
 	}
 	
