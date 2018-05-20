@@ -20,6 +20,7 @@ import org.jsoup.select.Elements;
 
 import ph.krisp.stocks.model.StockRawInfo;
 import ph.krisp.stocks.utils.CalcUtils;
+import ph.krisp.stocks.utils.JsonUtils;
 import ph.krisp.stocks.utils.WebUtils;
 
 /**
@@ -143,12 +144,14 @@ public class WebCon {
 				String rawDate = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
 				
 				// add info here
-				Map<String, String> info = StockParser.parseStockInfo(stockDoc, cookies);
-				
+				Map<String, String> info = StockParser.parseStockInfo(stockDoc);
+//				System.out.println(JsonUtils.objectToJson(info));
 				// add fundamental analysis here
-				
+				Map<String, String> fundamentalAnalysis = StockParser.parseFundamentalAnalysis(stockDoc);
+//				System.out.println(JsonUtils.objectToJson(fundamentalAnalysis));
 				// add technical analysis here
-				
+				Map<String, String> technicalAnalysis = StockParser.parseTechnicalAnalysis(stockDoc);
+				System.out.println(JsonUtils.objectToJson(technicalAnalysis));
 				// check historical info here
 				
 				// update map

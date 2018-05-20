@@ -33,17 +33,17 @@ public class StockParser {
 	}
 	
 	/**
-	 * Parses the stock information
+	 * Parses the stock information. Selects all tr within the appropriate
+	 * table, all contains a label and the data to be saved
 	 * 
 	 * @param doc
 	 *            the webpage to be parsed for stock information
-	 * @param cookies
-	 *            the authorized cookies
 	 * @return the raw stock information object
 	 */
-	public static Map<String, String> parseStockInfo(Document doc, Map<String, String> cookies) {
-		Map<String, String> info = new HashMap<>();
+	public static Map<String, String> parseStockInfo(Document doc) {
 		Elements table = doc.body().select(".col-xs-4 > table > tbody > tr");
+		
+		Map<String, String> info = new HashMap<>(); 
 		for(Element e : table) {
 			Element label = e.select("td").first().child(0);
 			Element data = e.select(".stock-price").first();
@@ -52,14 +52,48 @@ public class StockParser {
 			String value = data.ownText();
 			info.put(key, value);
 		}
-		
 		return info;
 	}
 	
-	public static StockFundamentalAnalysis parseStockFundamentalAnalyis() {
+	/**
+	 * Parses the FundamentalAnalysisContent for all data
+	 * 
+	 * @param doc
+	 * @return the key-value pairs parsed from FundamentalAnalysisContent
+	 */
+	public static Map<String, String> parseFundamentalAnalysis(Document doc) {
 		
+		return parseAnalysis(doc, "#FundamentalAnalysisContent > div > div > div > table > tbody > tr > td");
+	}
+	
+	/**
+	 * Parses the TechnicalAnalysisContent for all data
+	 * 
+	 * @param doc
+	 * @return the key-value pairs parsed from TechnicalAnalysisContent
+	 */
+	public static Map<String, String> parseTechnicalAnalysis(Document doc) {
+
+		return parseAnalysis(doc, "#TechnicalAnalysisContent > div > .col-xs-12 > div > table > tbody > tr > td");
+	}
+
+	private static Map<String, String> parseAnalysis(Document doc, String cssQuery) {
+		Elements table = doc.body().select(cssQuery);
 		
-		return null;
+		Map<String, String> info = new HashMap<>(); 
+		for(int i=0; i<table.size()-2; i+=2){
+			String key = table.get(i).child(0).ownText().replace(":", "");
+			Element data;
+			String value;
+			try {
+				data = table.get(i+1).select(".stock-price").first();
+				value = data.ownText();
+			} catch(NullPointerException e) {
+				value = table.get(i+1).ownText();
+			}
+			info.put(key, value);
+		}
+		return info;
 	}
 	
 	public static StockTechnicalAnalysis parseStockTechnicalAnalysis() {

@@ -1,6 +1,5 @@
 package ph.krisp.stocks.model;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -13,9 +12,9 @@ public class Stock {
 	private String code;
 	private String date;
 	private Map<String, String> info;
-	
-	private StockFundamentalAnalysis fa;
-	private StockTechnicalAnalysis ta;
+	private Map<String, String> fundamentalAnalyis;
+	private Map<String, String> technicalAnalyis;
+
 	
 	
 	
