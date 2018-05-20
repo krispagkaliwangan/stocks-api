@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+import ph.krisp.stocks.model.Stock;
 import ph.krisp.stocks.model.StockRawInfo;
 
 /**
@@ -26,7 +27,7 @@ public class CsvUtils {
 	 * 
 	 * @param stock
 	 */
-	public static void updateStockFile(StockRawInfo stock) {
+	public static void updateStockFile(Stock stock) {
 		
 		String dir = WebUtils.getOutputPath();
 		String file = dir + stock.getCode() + ".csv";

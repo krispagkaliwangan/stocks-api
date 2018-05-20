@@ -1,6 +1,7 @@
 package ph.krisp.stocks.model;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class containing stock information and analysis
@@ -26,6 +27,45 @@ public class Stock {
 		this.fundamentalAnalyis = fundamentalAnalyis;
 		this.technicalAnalyis = technicalAnalyis;
 	}
+	
+	public String getCode() {
+		return code;
+	}
+	public String getDate() {
+		return date;
+	}
+	
+	public Set<String> infoKeySet() {
+		return this.info.keySet();
+	}
+	
+	public String getInfoProperty(String key) {
+		return this.info.get(key);
+	}
+	
+	public Set<String> faKeySet() {
+		return this.fundamentalAnalyis.keySet();
+	}
+	
+	public String getFAProperty(String key) {
+		return this.fundamentalAnalyis.get(key);
+	}
+	
+	public Set<String> taKeySet() {
+		return this.technicalAnalyis.keySet();
+	}
+	
+	public String getTAProperty(String key) {
+		return this.technicalAnalyis.get(key);
+	}
+	
+	
+	
+	
+	// ----------------------------
+	// Specific Methods
+	// ----------------------------
+	
 	public String getClose() {
 		return this.info.get("Last Price");
 	}

@@ -172,7 +172,7 @@ public class WebCon {
 			e.printStackTrace();
 		} 
 		logger.info("Stock data downloaded. Total=" + stockInfo.size() + 
-				" Elapsed: " + (System.nanoTime()-startTime)/1000000000 + "s");
+				" Elapsed: " + (System.nanoTime()-startTime)/1000000000.00 + "s");
 		return stockInfo;
 	}
 	

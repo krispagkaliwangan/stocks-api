@@ -1,16 +1,11 @@
 package ph.krisp.stocks.connection;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import ph.krisp.stocks.model.StockFundamentalAnalysis;
-import ph.krisp.stocks.model.StockRawInfo;
-import ph.krisp.stocks.model.StockTechnicalAnalysis;
 
 /**
  * Class containing parsers for various information for the stock
@@ -64,7 +59,8 @@ public class StockParser {
 	 */
 	public static Map<String, String> parseFundamentalAnalysis(Document doc) {
 		
-		return parseAnalysis(doc, "#FundamentalAnalysisContent > div > div > div > table > tbody > tr > td");
+		return parseAnalysis(doc,
+				"#FundamentalAnalysisContent > div > div > div > table > tbody > tr > td");
 	}
 	
 	/**
@@ -74,10 +70,73 @@ public class StockParser {
 	 * @return the key-value pairs parsed from TechnicalAnalysisContent
 	 */
 	public static Map<String, String> parseTechnicalAnalysis(Document doc) {
-
-		return parseAnalysis(doc, "#TechnicalAnalysisContent > div > .col-xs-12 > div > table > tbody > tr > td");
+		Map<String, String> analysis = parseAnalysis(doc,
+				"#TechnicalAnalysisContent > div > .col-xs-12 > div > table > tbody > tr > td"); 
+		
+		// indicators
+		analysis = parseIndicators(analysis, doc);
+		
+		
+		return analysis;
 	}
 
+	/**
+	 * Parses the indicators under technical analysis content
+	 * 
+	 * @param analysis
+	 *            the initial data structure containing the technical analysis
+	 * @param doc
+	 * @return the updated data structure containing the indicators
+	 */
+	private static Map<String, String> parseIndicators(Map<String, String> analysis, Document doc) {
+		Elements table = doc.body()
+				.select("#TechnicalAnalysisContent > div > .col-xs-6 > div > table > tbody > tr > td");
+		
+		for(int i=0; i<table.size(); i+=3){
+			String key = table.get(i).child(0).ownText();
+			// moving average
+			if(key.startsWith("MA ")) {
+				String key1 = key+" Simple";
+				String value1 = table.get(i+1).ownText().replace(")", "").replace("(", "").trim();
+				analysis.put(key1, value1);
+				
+				String key1a = key+" Simple Action";
+				String value1a = table.get(i+1).child(0).ownText();
+				analysis.put(key1a, value1a);
+				
+				String key2 = key+" Exp";
+				String value2 = table.get(i+2).ownText().replace(")", "").replace("(", "").trim();
+				analysis.put(key2, value2);
+				
+				String key2a = key+" Exp Action";
+				String value2a = table.get(i+2).child(0).ownText();
+				analysis.put(key2a, value2a);
+			}
+			
+			// other indicators
+			else {
+				String value = table.get(i+1).ownText();
+				analysis.put(key, value);	
+				
+				String keya = key + " Action";
+				String action;
+				try {
+					action = table.get(i+2).child(0).ownText();
+				} catch(IndexOutOfBoundsException e) {
+					action = table.get(i+2).ownText();
+				}
+				analysis.put(keya, action);	
+			}
+
+//			System.out.println(table.get(i).html());
+//			System.out.println("\t" + table.get(i+1).html());
+//			System.out.println("\t" + table.get(i+2).html());
+
+		}
+		
+		return analysis;
+	}
+	
 	/**
 	 * Extracts all elements from the document using the cssQuery. Loops through
 	 * the extracted elements sequentially. The odd numbered elements are the key
