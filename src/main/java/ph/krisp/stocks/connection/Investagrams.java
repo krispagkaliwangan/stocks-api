@@ -1,22 +1,19 @@
 package ph.krisp.stocks.connection;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import ph.krisp.stocks.model.Stock;
-import ph.krisp.stocks.utils.CalcUtils;
 import ph.krisp.stocks.utils.WebUtils;
 
 /**
@@ -25,23 +22,28 @@ import ph.krisp.stocks.utils.WebUtils;
  * @author kris.pagkaliwangan
  *
  */
-public class WebConnection {
+public class Investagrams {
 
-	private static final Logger logger = Logger.getLogger("WebConnection");
+	private static final Logger logger = Logger.getLogger("Investagrams");
 	
 	private static final String LOGIN_URL = "https://www.investagrams.com";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";  
 	private static final String REAL_TIME_MON_URL = "https://www.investagrams.com/Stock/RealTimeMonitoring";
-	
-	private WebConnection() {}
+	private static final String STOCK_BASE_URL = "https://www.investagrams.com/Stock/";
 	
 	/**
-	 * Logins to the given LOGIN_URL and returns the cookies to be used for
+	 * Authorized cookies updated after logging in
+	 */
+	private static Map<String, String> cookies;
+	
+	private Investagrams() {}
+	
+	/**
+	 * Logins to the given LOGIN_URL and updates the cookies to be used for
 	 * authorized transactions
 	 * 
-	 * @return the cookies representing the login state
 	 */
-	public static Map<String, String> login() {
+	public static void login() {
 		logger.info("Logging in...");
 		try {
 			// get login page
@@ -52,7 +54,7 @@ public class WebConnection {
 					.execute();
 			Document loginDoc = loginForm.parse();
 			// get cookies
-			Map<String, String> cookies = loginForm.cookies();
+			cookies = loginForm.cookies();
 			
 			// get formData variables
     		String scriptManager = "LoginUserControlPanel$LoginUpdatePanel|LoginUserControlPanel$LoginButton";
@@ -91,28 +93,29 @@ public class WebConnection {
     		
     		if(homePage.body().contains("pageRedirect")) {
     			// update cookies
-        		logger.info("Logging in successful!");
-        		return homePage.cookies();
+    			cookies = homePage.cookies();
+        		logger.info("Login successful!");
     		}
     		
 		} catch (IOException e) {
+			logger.info("Login unsuccessful!");
 			e.printStackTrace();
 		}
 		
-		logger.info("Login unsuccessful!");
-		return null;
+		
 	}
 	
 	/**
 	 * Retrieves all the stock codes in the real time monitoring page of the
 	 * Investagrams with their corresponding information
 	 * 
-	 * @param cookies
-	 *            the authorized cookies
 	 * @return a map containing all the stock codes paired to its stock
 	 *         information
 	 */
-	public static Map<String, Stock> getAllStockInfo(Map<String, String> cookies) {
+	public static Map<String, Stock> getAllStockInfo() {
+		logger.info("Downloading stock data...");
+		long startTime = System.nanoTime();
+		
 		Map<String, Stock> stockInfo = new HashMap<>();
 		
 		// check if cookies are valid
@@ -121,71 +124,59 @@ public class WebConnection {
 		}
 		
 		try {
-			Document stockDoc = getDocument(cookies);
+			Document stockListDoc = getDocument(REAL_TIME_MON_URL);
 			
 			// extract all stock codes
-			Elements table = stockDoc.body()
+			Elements table = stockListDoc.body()
 					.select("#StockQuoteTable > tbody > tr");
 
 			for (Element row : table) {
-				Stock stock = parseStockInfo(row);
-				stockInfo.put(stock.getCode(), stock);
+				String stockCode = StockParser.parseStockCode(row);
+				stockInfo.put(stockCode, getStock(stockCode));
 			}
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-		
+		logger.info("Stock data downloaded. Total=" + stockInfo.size() + 
+				" Elapsed: " + (System.nanoTime()-startTime)/1000000000.00 + "s");
 		return stockInfo;
 	}
 	
 	/**
-	 * Parses all stock information for the particular row
+	 * Retrieves the stock object with data of the given stockCode
 	 * 
-	 * @param row
-	 *            the row to be parsed for a particular stock
-	 * @return the object containing the stock information
+	 * @param stockCode
+	 * @return the stock object with data
+	 * @throws IOException 
 	 */
-	private static Stock parseStockInfo(Element row) {
-		Elements rowData = row.select("td");
+	public static Stock getStock(String stockCode) throws IOException {
 		
-		// 0 - ignore
-		
-		// 1 - stock code
-		String code = rowData.get(1).select("a").first().ownText();
-		// 2 - close
-		BigDecimal close = CalcUtils.parseNumber(rowData.get(2).ownText());
-		// 3 - change
-		BigDecimal change = CalcUtils.parseNumber(rowData.get(3).ownText());
-		// 4 - %change
-		BigDecimal percentChange = CalcUtils.parseNumber(rowData.get(4).ownText())
-									.divide(new BigDecimal("100"));
-		// 5 - open
-		BigDecimal open = CalcUtils.parseNumber(rowData.get(5).ownText());
-		// 6 - low
-		BigDecimal low = CalcUtils.parseNumber(rowData.get(6).ownText());
-		// 7 - high
-		BigDecimal high = CalcUtils.parseNumber(rowData.get(7).ownText());
-		// 8 - previous close
-		BigDecimal previousClose = CalcUtils.parseNumber(rowData.get(8).ownText());
-		// 9 - volume
-		BigDecimal volume = CalcUtils.parseNumber(rowData.get(9).attr("data-sort")).stripTrailingZeros();
-		// 10 - value
-		BigDecimal value = CalcUtils.parseNumber(rowData.get(10).attr("data-sort")).stripTrailingZeros();
+		String stockUrl = STOCK_BASE_URL + stockCode;
 
-		return new Stock(code, close, change, percentChange, open, low, high, previousClose, volume, value);
+		logger.info("Downloading " + stockUrl);
+		Document stockDoc = getDocument(stockUrl);
+		
+		String date = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
+		Map<String, String> properties = new LinkedHashMap<>();
+		properties.put("date", date);
+		properties = StockParser.parseStockInfo(stockDoc, properties);
+		properties = StockParser.parseFundamentalAnalysis(stockDoc, properties);
+		properties = StockParser.parseTechnicalAnalysis(stockDoc, properties);
+		
+		return new Stock(stockCode, properties);
 	}
 	
 	/**
 	 * Gets the document using the authorized cookies
 	 * 
-	 * @param cookies
-	 *            the authorized cookies
+	 * @param url
+	 *            the website url
 	 * @return the document
 	 * @throws IOException
 	 */
-	private static Document getDocument(Map<String, String> cookies) throws IOException {
-		return Jsoup.connect(REAL_TIME_MON_URL)  
+	private static Document getDocument(String url) throws IOException {
+		return Jsoup.connect(url)  
 		         .cookies(cookies)  
 		         .userAgent(USER_AGENT)  
 		         .get();

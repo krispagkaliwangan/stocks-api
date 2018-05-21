@@ -1,9 +1,10 @@
 package ph.krisp.stocks.model;
 
-import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Class representation of a stock with the basic information
+ * Class containing stock information and analysis
  * 
  * @author kris.pagkaliwangan
  *
@@ -11,61 +12,25 @@ import java.math.BigDecimal;
 public class Stock {
 
 	private String code;
-	private BigDecimal close;
-	private BigDecimal change;
-	private BigDecimal percentChange;
-	private BigDecimal open;
-	private BigDecimal low;
-	private BigDecimal high;
-	private BigDecimal previousClose;
-	private BigDecimal volume;
-	private BigDecimal value;
+	private Map<String, String> properties;
 	
-	public Stock(String code, BigDecimal close, BigDecimal change,
-			BigDecimal percentChange, BigDecimal open, BigDecimal low,
-			BigDecimal high, BigDecimal previousClose, BigDecimal volume,
-			BigDecimal value) {
+	public Stock(String code, Map<String, String> properties) {
 		super();
 		this.code = code;
-		this.close = close;
-		this.change = change;
-		this.percentChange = percentChange;
-		this.open = open;
-		this.low = low;
-		this.high = high;
-		this.previousClose = previousClose;
-		this.volume = volume;
-		this.value = value;
+		this.properties = properties;
 	}
+
 	public String getCode() {
 		return code;
 	}
-	public BigDecimal getOpen() {
-		return open;
+	public String getProperty(String key) {
+		return this.properties.get(key);
 	}
-	public BigDecimal getLow() {
-		return low;
+	public Set<String> keySet() {
+		return this.properties.keySet();
 	}
-	public BigDecimal getHigh() {
-		return high;
-	}
-	public BigDecimal getClose() {
-		return close;
-	}
-	public BigDecimal getPreviousClose() {
-		return previousClose;
-	}
-	public BigDecimal getVolume() {
-		return volume;
-	}
-	public BigDecimal getValue() {
-		return value;
-	}
-	public BigDecimal getChange() {
-		return change;
-	}
-	public BigDecimal getPercentChange() {
-		return percentChange;
+	public boolean containsKey(String key) {
+		return this.properties.containsKey(key);
 	}
 	
 	
