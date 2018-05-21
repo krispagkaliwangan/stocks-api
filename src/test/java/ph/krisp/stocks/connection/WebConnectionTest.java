@@ -2,6 +2,7 @@ package ph.krisp.stocks.connection;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,30 +19,28 @@ public class WebConnectionTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		cookies = WebCon.login();
+		WebCon.login();
 	}
 
 	@Test
 	public void testGetAllStockCodes() {
-		Map<String, Stock> stockInfo = WebCon.getAllStockInfo(cookies);
+		Map<String, Stock> stockInfo = WebCon.getAllStockInfo();
 		assertTrue(stockInfo.size() > 0);
-		
-//		for(StockInfo s : stockInfo.values()) {
-//			assertNotNull(s.getCode());
-//			assertNotNull(s.getClose());
-//			assertNotNull(s.getChange());
-//			assertNotNull(s.getPercentChange());
-//			assertNotNull(s.getOpen());
-//			assertNotNull(s.getLow());
-//			assertNotNull(s.getHigh());
-//			assertNotNull(s.getPreviousClose());
-//			assertNotNull(s.getVolume());
-//			assertNotNull(s.getValue());
-//		}
 		
 		System.out.println(JsonUtils.objectToJson(stockInfo));
 		System.out.println("size = " + stockInfo.size());
 		
+	}
+	
+	@Test
+	public void testGetStockCode() {
+		try {
+			Stock stock = WebCon.getStock("SMPH");
+			System.out.println(JsonUtils.objectToJson(stock));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

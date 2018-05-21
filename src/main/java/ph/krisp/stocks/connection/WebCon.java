@@ -39,15 +39,16 @@ public class WebCon {
 	private static final String REAL_TIME_MON_URL = "https://www.investagrams.com/Stock/RealTimeMonitoring";
 	private static final String STOCK_BASE_URL = "https://www.investagrams.com/Stock/";
 	
+	private static Map<String, String> cookies;
+	
 	private WebCon() {}
 	
 	/**
-	 * Logins to the given LOGIN_URL and returns the cookies to be used for
+	 * Logins to the given LOGIN_URL and updates the cookies to be used for
 	 * authorized transactions
 	 * 
-	 * @return the cookies representing the login state
 	 */
-	public static Map<String, String> login() {
+	public static void login() {
 		logger.info("Logging in...");
 		try {
 			// get login page
@@ -58,7 +59,7 @@ public class WebCon {
 					.execute();
 			Document loginDoc = loginForm.parse();
 			// get cookies
-			Map<String, String> cookies = loginForm.cookies();
+			cookies = loginForm.cookies();
 			
 			// get formData variables
     		String scriptManager = "LoginUserControlPanel$LoginUpdatePanel|LoginUserControlPanel$LoginButton";
@@ -97,8 +98,8 @@ public class WebCon {
     		
     		if(homePage.body().contains("pageRedirect")) {
     			// update cookies
+    			cookies = homePage.cookies();
         		logger.info("Login successful!");
-        		return homePage.cookies();
     		}
     		
 		} catch (IOException e) {
@@ -106,19 +107,16 @@ public class WebCon {
 		}
 		
 		logger.info("Login unsuccessful!");
-		return null;
 	}
 	
 	/**
 	 * Retrieves all the stock codes in the real time monitoring page of the
 	 * Investagrams with their corresponding information
 	 * 
-	 * @param cookies
-	 *            the authorized cookies
 	 * @return a map containing all the stock codes paired to its stock
 	 *         information
 	 */
-	public static Map<String, Stock> getAllStockInfo(Map<String, String> cookies) {
+	public static Map<String, Stock> getAllStockInfo() {
 		logger.info("Downloading stock data...");
 		long startTime = System.nanoTime();
 		
@@ -130,42 +128,17 @@ public class WebCon {
 		}
 		
 		try {
-			Document stockListDoc = getDocument(REAL_TIME_MON_URL, cookies);
+			Document stockListDoc = getDocument(REAL_TIME_MON_URL);
 			
 			// extract all stock codes
 			Elements table = stockListDoc.body()
 					.select("#StockQuoteTable > tbody > tr");
 
 			for (Element row : table) {
+				
 				String stockCode = StockParser.parseStockCode(row);
-				String stockUrl = STOCK_BASE_URL + stockCode;
-				
-				// parse page here
-				logger.info("Downloading " + stockUrl);
-				Document stockDoc = getDocument(stockUrl, cookies);
-				
-				// add date here
-				String rawDate = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
-				
-				// add info here
-				Map<String, String> info = StockParser.parseStockInfo(stockDoc);
-//				System.out.println(JsonUtils.objectToJson(info));
-				// add fundamental analysis here
-				Map<String, String> fundamentalAnalysis = StockParser.parseFundamentalAnalysis(stockDoc);
-//				System.out.println(JsonUtils.objectToJson(fundamentalAnalysis));
-				// add technical analysis here
-				Map<String, String> technicalAnalysis = StockParser.parseTechnicalAnalysis(stockDoc);
-//				System.out.println(JsonUtils.objectToJson(technicalAnalysis));
-				
-				
-				
-				// check historical info here
-				
-				// create object here
-				Stock stock = new Stock(stockCode, rawDate, info, fundamentalAnalysis, technicalAnalysis);
-
 				// update map
-				stockInfo.put(stockCode, stock);
+				stockInfo.put(stockCode, getStock(stockCode));
 			}
 			
 		} catch (IOException e) {
@@ -177,16 +150,36 @@ public class WebCon {
 	}
 	
 	/**
+	 * Retrieves the stock object with data of the given stockCode
+	 * 
+	 * @param stockCode
+	 * @return the stock object with data
+	 * @throws IOException 
+	 */
+	public static Stock getStock(String stockCode) throws IOException {
+		
+		String stockUrl = STOCK_BASE_URL + stockCode;
+
+		logger.info("Downloading " + stockUrl);
+		Document stockDoc = getDocument(stockUrl);
+		
+		String date = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
+
+		return new Stock(stockCode, date,
+				StockParser.parseStockInfo(stockDoc),
+				StockParser.parseFundamentalAnalysis(stockDoc),
+				StockParser.parseTechnicalAnalysis(stockDoc));
+	}
+	
+	/**
 	 * Gets the document using the authorized cookies
 	 * 
 	 * @param url
 	 *            the website url
-	 * @param cookies
-	 *            the authorized cookies
 	 * @return the document
 	 * @throws IOException
 	 */
-	private static Document getDocument(String url, Map<String, String> cookies) throws IOException {
+	private static Document getDocument(String url) throws IOException {
 		return Jsoup.connect(url)  
 		         .cookies(cookies)  
 		         .userAgent(USER_AGENT)  

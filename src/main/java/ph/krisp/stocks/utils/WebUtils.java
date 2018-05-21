@@ -3,7 +3,11 @@ package ph.krisp.stocks.utils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 /**
  * Various web utility methods
@@ -56,6 +60,23 @@ public class WebUtils {
 		} 
 		
 		return prop;
+	}
+	
+	/**
+	 * Gets the document using the authorized cookies
+	 * 
+	 * @param url
+	 *            the website url
+	 * @param cookies
+	 *            the authorized cookies
+	 * @return the document
+	 * @throws IOException
+	 */
+	private static Document getDocument(String url, Map<String, String> cookies) throws IOException {
+		return Jsoup.connect(url)  
+		         .cookies(cookies)  
+		         .userAgent(USER_AGENT)  
+		         .get();
 	}
 	
 }
