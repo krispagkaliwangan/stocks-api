@@ -1,32 +1,33 @@
 package ph.krisp.stocks.utils;
 
-import static org.junit.Assert.*;
-
+import java.io.IOException;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import ph.krisp.stocks.connection.WebCon;
+import ph.krisp.stocks.connection.Investagrams;
 import ph.krisp.stocks.model.Stock;
-import ph.krisp.stocks.model.StockRawInfo;
 
 public class CsvUtilsTest {
 
-	private Map<String, String> cookies;
-	private Map<String, Stock> stockInfo;
 	
 	@Before
 	public void setUp() throws Exception {
-		cookies = WebCon.login();
-    	stockInfo = WebCon.getAllStockInfo(cookies);
+		Investagrams.login();
+		
 	}
 
 	@Test
-	public void test() {
+	public void testUpdateStockFile() {
 		
-		for(Stock s : stockInfo.values()) {
-			CsvUtils.updateStockFile(s);
+		try {
+			Stock stock = Investagrams.getStock("SMPH");
+//			System.out.println(JsonUtils.objectToJson(stock));
+			CsvUtils.updateStockFile(stock);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

@@ -1,27 +1,19 @@
 package ph.krisp.stocks.connection;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import ph.krisp.stocks.model.Stock;
-import ph.krisp.stocks.model.StockRawInfo;
-import ph.krisp.stocks.utils.CalcUtils;
-import ph.krisp.stocks.utils.JsonUtils;
 import ph.krisp.stocks.utils.WebUtils;
 
 /**
@@ -30,18 +22,21 @@ import ph.krisp.stocks.utils.WebUtils;
  * @author kris.pagkaliwangan
  *
  */
-public class WebCon {
+public class Investagrams {
 
-	private static final Logger logger = Logger.getLogger("WebConnection");
+	private static final Logger logger = Logger.getLogger("Investagrams");
 	
 	private static final String LOGIN_URL = "https://www.investagrams.com";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";  
 	private static final String REAL_TIME_MON_URL = "https://www.investagrams.com/Stock/RealTimeMonitoring";
 	private static final String STOCK_BASE_URL = "https://www.investagrams.com/Stock/";
 	
+	/**
+	 * Authorized cookies updated after logging in
+	 */
 	private static Map<String, String> cookies;
 	
-	private WebCon() {}
+	private Investagrams() {}
 	
 	/**
 	 * Logins to the given LOGIN_URL and updates the cookies to be used for
@@ -103,10 +98,11 @@ public class WebCon {
     		}
     		
 		} catch (IOException e) {
+			logger.info("Login unsuccessful!");
 			e.printStackTrace();
 		}
 		
-		logger.info("Login unsuccessful!");
+		
 	}
 	
 	/**
@@ -135,9 +131,7 @@ public class WebCon {
 					.select("#StockQuoteTable > tbody > tr");
 
 			for (Element row : table) {
-				
 				String stockCode = StockParser.parseStockCode(row);
-				// update map
 				stockInfo.put(stockCode, getStock(stockCode));
 			}
 			
@@ -164,11 +158,13 @@ public class WebCon {
 		Document stockDoc = getDocument(stockUrl);
 		
 		String date = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
-
-		return new Stock(stockCode, date,
-				StockParser.parseStockInfo(stockDoc),
-				StockParser.parseFundamentalAnalysis(stockDoc),
-				StockParser.parseTechnicalAnalysis(stockDoc));
+		Map<String, String> properties = new LinkedHashMap<>();
+		properties.put("date", date);
+		properties = StockParser.parseStockInfo(stockDoc, properties);
+		properties = StockParser.parseFundamentalAnalysis(stockDoc, properties);
+		properties = StockParser.parseTechnicalAnalysis(stockDoc, properties);
+		
+		return new Stock(stockCode, properties);
 	}
 	
 	/**

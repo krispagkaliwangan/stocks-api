@@ -34,21 +34,25 @@ public class StockParser {
 	 * 
 	 * @param doc
 	 *            the webpage to be parsed for stock information
+	 * @param properties
+	 *            the properties data structure to be populated
 	 * @return the raw stock information object
 	 */
-	public static Map<String, String> parseStockInfo(Document doc) {
+	public static Map<String, String> parseStockInfo(Document doc,
+			Map<String, String> properties) {
 		Elements table = doc.body().select(".col-xs-4 > table > tbody > tr");
-		
-		Map<String, String> info = new LinkedHashMap<>(); 
+
 		for(Element e : table) {
 			Element label = e.select("td").first().child(0);
 			Element data = e.select(".stock-price").first();
 			
-			String key = label.ownText().replace(":", "");
+			String key = label.ownText()
+					.replace(":", "")
+					.replace(",", "");
 			String value = data.ownText();
-			info.put(key, value);
+			properties.put(key, value);
 		}
-		return info;
+		return properties;
 	}
 	
 	/**
@@ -57,10 +61,12 @@ public class StockParser {
 	 * @param doc
 	 * @return the key-value pairs parsed from FundamentalAnalysisContent
 	 */
-	public static Map<String, String> parseFundamentalAnalysis(Document doc) {
+	public static Map<String, String> parseFundamentalAnalysis(Document doc,
+			Map<String, String> properties) {
 		
 		return parseAnalysis(doc,
-				"#FundamentalAnalysisContent > div > div > div > table > tbody > tr > td");
+				"#FundamentalAnalysisContent > div > div > div > table > tbody > tr > td",
+				properties);
 	}
 	
 	/**
@@ -69,9 +75,11 @@ public class StockParser {
 	 * @param doc
 	 * @return the key-value pairs parsed from TechnicalAnalysisContent
 	 */
-	public static Map<String, String> parseTechnicalAnalysis(Document doc) {
+	public static Map<String, String> parseTechnicalAnalysis(Document doc,
+			Map<String, String> properties) {
 		Map<String, String> analysis = parseAnalysis(doc,
-				"#TechnicalAnalysisContent > div > .col-xs-12 > div > table > tbody > tr > td"); 
+				"#TechnicalAnalysisContent > div > .col-xs-12 > div > table > tbody > tr > td",
+				properties); 
 		
 		// indicators
 		analysis = parseIndicators(analysis, doc);
@@ -83,6 +91,8 @@ public class StockParser {
 	/**
 	 * Parses the indicators under technical analysis content
 	 * 
+	 * TODO: replace all String parsers with regex
+	 * 
 	 * @param analysis
 	 *            the initial data structure containing the technical analysis
 	 * @param doc
@@ -93,11 +103,15 @@ public class StockParser {
 				.select("#TechnicalAnalysisContent > div > .col-xs-6 > div > table > tbody > tr > td");
 		
 		for(int i=0; i<table.size(); i+=3){
-			String key = table.get(i).child(0).ownText();
+			String key = table.get(i).child(0).ownText().replace(",", "");
 			// moving average
 			if(key.startsWith("MA ")) {
 				String key1 = key+" Simple";
-				String value1 = table.get(i+1).ownText().replace(")", "").replace("(", "").trim();
+				String value1 = table.get(i+1).ownText()
+						.replace(")", "")
+						.replace("(", "")
+						.replace(",", "")
+						.trim();
 				analysis.put(key1, value1);
 				
 				String key1a = key+" Simple Action";
@@ -105,7 +119,11 @@ public class StockParser {
 				analysis.put(key1a, value1a);
 				
 				String key2 = key+" Exp";
-				String value2 = table.get(i+2).ownText().replace(")", "").replace("(", "").trim();
+				String value2 = table.get(i+2).ownText()
+						.replace(")", "")
+						.replace("(", "")
+						.replace(",", "")
+						.trim();
 				analysis.put(key2, value2);
 				
 				String key2a = key+" Exp Action";
@@ -150,12 +168,14 @@ public class StockParser {
 	 * @return a key-value pairs containing the label and the data for that
 	 *         label
 	 */
-	private static Map<String, String> parseAnalysis(Document doc, String cssQuery) {
+	private static Map<String, String> parseAnalysis(Document doc, String cssQuery,
+			Map<String, String> properties) {
 		Elements table = doc.body().select(cssQuery);
-		
-		Map<String, String> info = new LinkedHashMap<>(); 
+
 		for(int i=0; i<table.size()-2; i+=2){
-			String key = table.get(i).child(0).ownText().replace(":", "");
+			String key = table.get(i).child(0).ownText()
+					.replace(":", "")
+					.replace(",", "");
 			Element data;
 			String value;
 			try {
@@ -164,9 +184,14 @@ public class StockParser {
 			} catch(NullPointerException e) {
 				value = table.get(i+1).ownText();
 			}
-			info.put(key, value);
+			if(properties.containsKey(key)) {
+				properties.put(key+"-2", value);
+			} else {
+				properties.put(key, value);
+			}
+			
 		}
-		return info;
+		return properties;
 	}
 	
 }

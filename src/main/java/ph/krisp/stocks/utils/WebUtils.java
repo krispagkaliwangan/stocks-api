@@ -3,8 +3,12 @@ package ph.krisp.stocks.utils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,6 +41,11 @@ public class WebUtils {
 		return properties.getProperty("output_path");
 	}
 	
+	public static Set<String> getAllKeySet() {
+		String keyset = properties.getProperty("keyset");
+		return new LinkedHashSet<>(Arrays.asList(keyset.split("\\s*,\\s*")));
+	}
+	
 	/**
 	 * Load the login properties
 	 * 
@@ -52,6 +61,7 @@ public class WebUtils {
 			prop.getProperty("username");
 			prop.getProperty("password");
 			prop.getProperty("output_path");
+			prop.getProperty("keyset");
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -60,23 +70,6 @@ public class WebUtils {
 		} 
 		
 		return prop;
-	}
-	
-	/**
-	 * Gets the document using the authorized cookies
-	 * 
-	 * @param url
-	 *            the website url
-	 * @param cookies
-	 *            the authorized cookies
-	 * @return the document
-	 * @throws IOException
-	 */
-	private static Document getDocument(String url, Map<String, String> cookies) throws IOException {
-		return Jsoup.connect(url)  
-		         .cookies(cookies)  
-		         .userAgent(USER_AGENT)  
-		         .get();
 	}
 	
 }
