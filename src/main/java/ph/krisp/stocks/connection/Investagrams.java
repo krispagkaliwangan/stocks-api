@@ -2,8 +2,10 @@ package ph.krisp.stocks.connection;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jsoup.Connection;
@@ -130,9 +132,15 @@ public class Investagrams {
 			Elements table = stockListDoc.body()
 					.select("#StockQuoteTable > tbody > tr");
 
+			Set<String> stockCodes = new HashSet<>();
 			for (Element row : table) {
-				String stockCode = StockParser.parseStockCode(row);
-				stockInfo.put(stockCode, getStock(stockCode));
+				stockCodes.add(StockParser.parseStockCode(row));
+				
+			}
+			// extract data
+			for(String stockCode : stockCodes) {
+				Stock stock = getStock(stockCode);
+				stockInfo.put(stockCode, stock);
 			}
 			
 		} catch (IOException e) {
