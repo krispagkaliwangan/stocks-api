@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ph.krisp.stocks.connection.multithread.StockPageManager;
 import ph.krisp.stocks.model.Stock;
 import ph.krisp.stocks.utils.WebUtils;
 
@@ -128,19 +130,16 @@ public class Investagrams {
 		try {
 			
 			Set<String> stockCodes = getStockList();
-			
 			// download data
-			// try to multithread
-			for(String stockCode : stockCodes) {
-				Stock stock = downloadStock(stockCode);
-				stockInfo.put(stockCode, stock);
-			}
+			StockPageManager stockPageManager = new StockPageManager(stockCodes);
+			stockPageManager.run();
+			stockInfo = stockPageManager.getStockInfo();
 			
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		} 
-		logger.info("Stock data downloaded. Total=" + stockInfo.size() + 
-				" Elapsed: " + (System.nanoTime()-startTime)/1000000000.00 + "s");
+		logger.info("Stock data (" + stockInfo.size() + 
+				") downloaded. Elapsed: " + (System.nanoTime()-startTime)/1000000000.00 + "s");
 		return stockInfo;
 	}
 	
@@ -155,7 +154,7 @@ public class Investagrams {
 		Elements table = stockListDoc.body()
 				.select("#StockQuoteTable > tbody > tr");
 
-		Set<String> stockCodes = new HashSet<>();
+		Set<String> stockCodes = new LinkedHashSet<>();
 		for (Element row : table) {
 			stockCodes.add(StockParser.parseStockCode(row));	
 		}
@@ -167,9 +166,9 @@ public class Investagrams {
 	 * 
 	 * @param stockCode
 	 * @return the stock object with data
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static Stock downloadStock(String stockCode) throws IOException {
+	public static Stock getStock(String stockCode) throws IOException {
 		
 		String stockUrl = STOCK_BASE_URL + stockCode;
 

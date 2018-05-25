@@ -38,7 +38,8 @@ public class CsvUtils {
     	for(Stock stock : stocks.values()) {
     		CsvUtils.updateStockFile(stock);
     	}
-    	logger.info("Stock data updated. Elapsed: " + (System.nanoTime()-startTime)/1000000.00 + "ms");
+    	logger.info("Stock data (" + stocks.size()
+    		+ ") updated. Elapsed: " + (System.nanoTime()-startTime)/1000000.00 + "ms");
 		
 	}
 	

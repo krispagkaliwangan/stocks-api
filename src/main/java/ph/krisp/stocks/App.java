@@ -24,6 +24,7 @@ public class App
     	// writes updated stock information
 		CsvUtils.updateAllStockFiles(stocks);
         
+		System.exit(0);
     }
     
 }
