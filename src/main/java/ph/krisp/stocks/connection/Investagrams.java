@@ -126,18 +126,11 @@ public class Investagrams {
 		}
 		
 		try {
-			Document stockListDoc = downloadDocument(REAL_TIME_MON_URL);
 			
-			// extract all stock codes
-			Elements table = stockListDoc.body()
-					.select("#StockQuoteTable > tbody > tr");
-
-			Set<String> stockCodes = new HashSet<>();
-			for (Element row : table) {
-				stockCodes.add(StockParser.parseStockCode(row));
-				
-			}
-			// extract data
+			Set<String> stockCodes = getStockList();
+			
+			// download data
+			// try to multithread
 			for(String stockCode : stockCodes) {
 				Stock stock = downloadStock(stockCode);
 				stockInfo.put(stockCode, stock);
@@ -149,6 +142,24 @@ public class Investagrams {
 		logger.info("Stock data downloaded. Total=" + stockInfo.size() + 
 				" Elapsed: " + (System.nanoTime()-startTime)/1000000000.00 + "s");
 		return stockInfo;
+	}
+	
+	/**
+	 * Downloads the list of stock codes
+	 * 
+	 * @return the list of stock codes
+	 * @throws IOException
+	 */
+	private static Set<String> getStockList() throws IOException {
+		Document stockListDoc = downloadDocument(REAL_TIME_MON_URL);
+		Elements table = stockListDoc.body()
+				.select("#StockQuoteTable > tbody > tr");
+
+		Set<String> stockCodes = new HashSet<>();
+		for (Element row : table) {
+			stockCodes.add(StockParser.parseStockCode(row));	
+		}
+		return stockCodes;
 	}
 	
 	/**
