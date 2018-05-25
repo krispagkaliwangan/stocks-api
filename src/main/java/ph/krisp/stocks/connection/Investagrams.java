@@ -126,7 +126,7 @@ public class Investagrams {
 		}
 		
 		try {
-			Document stockListDoc = getDocument(REAL_TIME_MON_URL);
+			Document stockListDoc = downloadDocument(REAL_TIME_MON_URL);
 			
 			// extract all stock codes
 			Elements table = stockListDoc.body()
@@ -139,7 +139,7 @@ public class Investagrams {
 			}
 			// extract data
 			for(String stockCode : stockCodes) {
-				Stock stock = getStock(stockCode);
+				Stock stock = downloadStock(stockCode);
 				stockInfo.put(stockCode, stock);
 			}
 			
@@ -158,12 +158,12 @@ public class Investagrams {
 	 * @return the stock object with data
 	 * @throws IOException 
 	 */
-	public static Stock getStock(String stockCode) throws IOException {
+	public static Stock downloadStock(String stockCode) throws IOException {
 		
 		String stockUrl = STOCK_BASE_URL + stockCode;
 
 		logger.info("Downloading " + stockUrl);
-		Document stockDoc = getDocument(stockUrl);
+		Document stockDoc = downloadDocument(stockUrl);
 		
 		String date = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
 		Map<String, String> properties = new LinkedHashMap<>();
@@ -183,7 +183,7 @@ public class Investagrams {
 	 * @return the document
 	 * @throws IOException
 	 */
-	private static Document getDocument(String url) throws IOException {
+	private static Document downloadDocument(String url) throws IOException {
 		return Jsoup.connect(url)  
 		         .cookies(cookies)  
 		         .userAgent(USER_AGENT)  
