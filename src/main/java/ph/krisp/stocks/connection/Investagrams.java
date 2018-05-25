@@ -2,8 +2,11 @@ package ph.krisp.stocks.connection;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jsoup.Connection;
@@ -13,6 +16,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ph.krisp.stocks.connection.multithread.StockPageManager;
 import ph.krisp.stocks.model.Stock;
 import ph.krisp.stocks.utils.WebUtils;
 
@@ -124,23 +128,37 @@ public class Investagrams {
 		}
 		
 		try {
-			Document stockListDoc = getDocument(REAL_TIME_MON_URL);
 			
-			// extract all stock codes
-			Elements table = stockListDoc.body()
-					.select("#StockQuoteTable > tbody > tr");
-
-			for (Element row : table) {
-				String stockCode = StockParser.parseStockCode(row);
-				stockInfo.put(stockCode, getStock(stockCode));
-			}
+			Set<String> stockCodes = getStockList();
+			// download data
+			StockPageManager stockPageManager = new StockPageManager(stockCodes);
+			stockPageManager.run();
+			stockInfo = stockPageManager.getStockInfo();
 			
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		} 
-		logger.info("Stock data downloaded. Total=" + stockInfo.size() + 
-				" Elapsed: " + (System.nanoTime()-startTime)/1000000000.00 + "s");
+		logger.info("Stock data (" + stockInfo.size() + 
+				") downloaded. Elapsed: " + (System.nanoTime()-startTime)/1000000000.00 + "s");
 		return stockInfo;
+	}
+	
+	/**
+	 * Downloads the list of stock codes
+	 * 
+	 * @return the list of stock codes
+	 * @throws IOException
+	 */
+	private static Set<String> getStockList() throws IOException {
+		Document stockListDoc = downloadDocument(REAL_TIME_MON_URL);
+		Elements table = stockListDoc.body()
+				.select("#StockQuoteTable > tbody > tr");
+
+		Set<String> stockCodes = new LinkedHashSet<>();
+		for (Element row : table) {
+			stockCodes.add(StockParser.parseStockCode(row));	
+		}
+		return stockCodes;
 	}
 	
 	/**
@@ -148,14 +166,14 @@ public class Investagrams {
 	 * 
 	 * @param stockCode
 	 * @return the stock object with data
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static Stock getStock(String stockCode) throws IOException {
 		
 		String stockUrl = STOCK_BASE_URL + stockCode;
 
 		logger.info("Downloading " + stockUrl);
-		Document stockDoc = getDocument(stockUrl);
+		Document stockDoc = downloadDocument(stockUrl);
 		
 		String date = stockDoc.select("p > #lblPriceLastUpdateDate").first().ownText();
 		Map<String, String> properties = new LinkedHashMap<>();
@@ -175,7 +193,7 @@ public class Investagrams {
 	 * @return the document
 	 * @throws IOException
 	 */
-	private static Document getDocument(String url) throws IOException {
+	private static Document downloadDocument(String url) throws IOException {
 		return Jsoup.connect(url)  
 		         .cookies(cookies)  
 		         .userAgent(USER_AGENT)  
