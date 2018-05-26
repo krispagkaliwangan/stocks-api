@@ -20,6 +20,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 
+import ph.krisp.stocks.loader.StockLoader;
 import ph.krisp.stocks.model.StockRaw;
 
 /**
@@ -110,11 +111,11 @@ public class CsvUtils {
 			// insert header if empty
 			File test = new File(file);
 			if(test.length() == 0) {
-				csvPrinter.printRecord(WebUtils.getAllKeySet());
+				csvPrinter.printRecord(StockLoader.getAllKeySet());
 			}
 			// else update
 			List<String> values = new ArrayList<>();
-			for(String key : WebUtils.getAllKeySet()) {
+			for(String key : StockLoader.getAllKeySet()) {
 				values.add(stock.getProperty(key));
 			}
 			csvPrinter.printRecord(values);

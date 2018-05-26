@@ -41,13 +41,6 @@ public class WebUtils {
 		return properties.getProperty("output_path");
 	}
 	
-	public static Set<String> getAllKeySet() {
-		String keyset = "date,Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign,52-Week High,Earnings Per Share TTM (EPS),Price to Book Value (P/BV),52-Week Low,Price-Earnings Ratio TTM (P/E),Return on Equity (ROE),Fair Value,Dividends Per Share (DPS),Recommendation,Support 1,Resistance 1,Short-Term Trend,Support 2,Resistance 2,Recommendation-2,Last Price-2,Year to Date %,Month to Date %,MA 20 Simple,MA 20 Simple Action,MA 20 Exp,MA 20 Exp Action,MA 50 Simple,MA 50 Simple Action,MA 50 Exp,MA 50 Exp Action,MA 100 Simple,MA 100 Simple Action,MA 100 Exp,MA 100 Exp Action,MA 200 Simple,MA 200 Simple Action,MA 200 Exp,MA 200 Exp Action,RSI(14),RSI(14) Action,MACD(12269),MACD(12269) Action,ATR(14),ATR(14) Action,CCI(20),CCI(20) Action,STS(1433),STS(1433) Action,Williams %R(14),Williams %R(14) Action,VolumeSMA(15),VolumeSMA(15) Action,CandleStick(1),CandleStick(1) Action";
-				//properties.getProperty("keyset");
-		return new LinkedHashSet<>(Arrays.asList(keyset.split("\\s*,\\s*")));
-		
-	}
-	
 	/**
 	 * Load the login properties
 	 * 
