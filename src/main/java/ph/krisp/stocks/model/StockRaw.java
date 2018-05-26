@@ -4,17 +4,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class containing stock information and analysis
+ * Class containing the raw stock information and analysis
  * 
  * @author kris.pagkaliwangan
  *
  */
-public class Stock {
+public class StockRaw {
 
 	private String code;
 	private Map<String, String> properties;
 	
-	public Stock(String code, Map<String, String> properties) {
+	public StockRaw(String code, Map<String, String> properties) {
 		super();
 		this.code = code;
 		this.properties = properties;

@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.utils.JsonUtils;
 import ph.krisp.stocks.utils.WebUtils;
 
@@ -24,7 +24,7 @@ public class InvestagramsTest {
 
 	@Test
 	public void testGetAllStockCodes() {
-		Map<String, Stock> stockInfo = Investagrams.getAllStockInfo();
+		Map<String, StockRaw> stockInfo = Investagrams.getAllStockInfo();
 		assertTrue(stockInfo.size() > 0);
 		
 		System.out.println(JsonUtils.objectToJson(stockInfo));
@@ -35,7 +35,7 @@ public class InvestagramsTest {
 	@Test
 	public void testGetStockCode() {
 		try {
-			Stock stock = Investagrams.getStock("SMPH");
+			StockRaw stock = Investagrams.getStock("SMPH");
 			System.out.println(
 					JsonUtils.objectToJson(stock.keySet()));
 			

@@ -3,7 +3,7 @@ package ph.krisp.stocks;
 import java.util.Map;
 
 import ph.krisp.stocks.connection.Investagrams;
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.utils.CsvUtils;
 
 /**
@@ -19,7 +19,7 @@ public class App
     {
     	// logins and retrieves all stock information
     	Investagrams.login();
-    	Map<String, Stock> stocks = Investagrams.getAllStockInfo();
+    	Map<String, StockRaw> stocks = Investagrams.getAllStockInfo();
     	
     	// writes updated stock information
 		CsvUtils.updateAllStockFiles(stocks);

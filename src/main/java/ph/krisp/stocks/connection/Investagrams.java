@@ -16,8 +16,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import ph.krisp.stocks.connection.multithread.StockPageManager;
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.utils.WebUtils;
 
 /**
@@ -116,11 +115,11 @@ public class Investagrams {
 	 * @return a map containing all the stock codes paired to its stock
 	 *         information
 	 */
-	public static Map<String, Stock> getAllStockInfo() {
+	public static Map<String, StockRaw> getAllStockInfo() {
 		logger.info("Downloading stock data...");
 		long startTime = System.nanoTime();
 		
-		Map<String, Stock> stockInfo = new HashMap<>();
+		Map<String, StockRaw> stockInfo = new HashMap<>();
 		
 		// check if cookies are valid
 		if(cookies.size() == 0 || cookies == null) {
@@ -168,7 +167,7 @@ public class Investagrams {
 	 * @return the stock object with data
 	 * @throws IOException
 	 */
-	public static Stock getStock(String stockCode) throws IOException {
+	public static StockRaw getStock(String stockCode) throws IOException {
 		
 		String stockUrl = STOCK_BASE_URL + stockCode;
 
@@ -182,7 +181,7 @@ public class Investagrams {
 		properties = StockParser.parseFundamentalAnalysis(stockDoc, properties);
 		properties = StockParser.parseTechnicalAnalysis(stockDoc, properties);
 		
-		return new Stock(stockCode, properties);
+		return new StockRaw(stockCode, properties);
 	}
 	
 	/**
