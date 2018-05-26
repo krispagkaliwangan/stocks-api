@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -12,7 +15,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 
 import ph.krisp.stocks.model.StockRaw;
@@ -32,15 +37,40 @@ public class CsvUtils {
 	private CsvUtils() {}
 	
 	/**
-	 * Loads the stock data starting from the most recent up to a certain
+	 * Loads the raw stock data starting from the most recent up to a certain
 	 * number of records
+	 * 
 	 * @param stockCode
-	 * @param depth the number of records to be retrieved
-	 * @return
+	 * @param depth
+	 *            the number of records to be retrieved
+	 * @return the list of StockRaw objects with size equal to the specified
+	 *         depth or all records if depth is greater than number of records
+	 *         saved in the file
+	 * 
 	 */
 	public static List<StockRaw> loadStock(String stockCode, int depth) {
-		
-		return null;
+		List<StockRaw> stocks = new ArrayList<>();
+		try (
+			 Reader reader = Files.newBufferedReader(Paths.get(DIR + stockCode + ".csv"));
+	         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader()); ){
+			
+			List<CSVRecord> csvRecords = csvParser.getRecords();
+			
+			int start = csvRecords.size()-depth;
+			if(depth >= csvRecords.size()) {
+				start = 0;
+			}
+			
+			for(int i=start; i<csvRecords.size(); i++) {
+				StockRaw stock = new StockRaw(stockCode, csvRecords.get(i).toMap());
+				stocks.add(stock);
+			}
+			
+		} catch(IOException e) {
+			logger.error(DIR + stockCode + ".csv not found.");
+		}
+		 
+		return stocks;
 	}
 	
 	/**
