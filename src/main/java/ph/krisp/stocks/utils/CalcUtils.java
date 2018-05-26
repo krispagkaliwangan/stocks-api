@@ -1,8 +1,13 @@
 package ph.krisp.stocks.utils;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 /**
  * Various calculation methods
@@ -11,7 +16,9 @@ import java.util.Map;
  *
  */
 public class CalcUtils {
-
+	
+	private static final Logger logger = Logger.getLogger("CalcUtils");
+	
 	private CalcUtils() {}
 	
 	private static Map<String, BigDecimal> modifiers = loadModifiers();
@@ -30,7 +37,24 @@ public class CalcUtils {
 	}
 	
 	/**
-	 * Removes % and comma in the String given
+	 * Parses the text containing date into date object
+	 * 
+	 * @param text
+	 * @return the date object
+	 */
+	public static Date parseDate(String text) {
+		String toParse = text;//.substring(0, text.indexOf(" ")).trim();
+		SimpleDateFormat f = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+		try {
+			return f.parse(toParse);
+		} catch (ParseException e) {
+			logger.error("text=" + text + "; toParse="+toParse);
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes % and comma in the String given, and applies any modifiers
 	 * 
 	 * @param text
 	 * @return text with % and comma replaced by empty character
@@ -64,9 +88,9 @@ public class CalcUtils {
 			return new BigDecimal(text);
 			
 		} catch(NumberFormatException e) {
+			logger.error(e);
 			return null;
 		}
-
 		
 	}
 	

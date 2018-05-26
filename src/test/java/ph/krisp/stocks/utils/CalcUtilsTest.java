@@ -3,6 +3,9 @@ package ph.krisp.stocks.utils;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +17,19 @@ public class CalcUtilsTest {
 	}
 
 	@Test
-	public void test() {
+	public void testParseDate() throws ParseException {
+		String text = "May 25, 2018 12:00:00 AM";
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+		Date d = sdf.parse("May 25, 2018 12:00:00 AM");
+		assertEquals(d, CalcUtils.parseDate(text));
+		
+		assertEquals("\"May 25, 2018 12:00:00 AM\"", JsonUtils.objectToJson(d));
+		
+	}
+	
+	@Test
+	public void testParseNumber() {
 		String text = "1.2K";
 		assertEquals(new BigDecimal("1.2E+3"), CalcUtils.parseNumber(text));
 
