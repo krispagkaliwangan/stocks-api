@@ -15,7 +15,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.log4j.Logger;
 
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 
 /**
  * Various CSV file utility methods
@@ -31,11 +31,30 @@ public class CsvUtils {
 	
 	private CsvUtils() {}
 	
-	public static void updateAllStockFiles(Map<String, Stock> stocks) {
+	/**
+	 * Loads the stock data starting from the most recent up to a certain
+	 * number of records
+	 * @param stockCode
+	 * @param depth the number of records to be retrieved
+	 * @return
+	 */
+	public static List<StockRaw> loadStock(String stockCode, int depth) {
+		
+		return null;
+	}
+	
+	/**
+	 * Writes all stock data to their corresponding files. Appends if the file
+	 * is existing. Creates a new file otherwise.
+	 * 
+	 * @param stocks
+	 *            the Collection of stock to be written
+	 */
+	public static void updateAllStockFiles(Map<String, StockRaw> stocks) {
 		logger.info("Writing to " + DIR);
 		long startTime = System.nanoTime();
     	// writes updated stock information
-    	for(Stock stock : stocks.values()) {
+    	for(StockRaw stock : stocks.values()) {
     		CsvUtils.updateStockFile(stock);
     	}
     	logger.info("Stock data (" + stocks.size()
@@ -49,7 +68,7 @@ public class CsvUtils {
 	 * 
 	 * @param stock
 	 */
-	public static void updateStockFile(Stock stock) {
+	public static void updateStockFile(StockRaw stock) {
 		
 		String file = DIR + stock.getCode() + ".csv";
 

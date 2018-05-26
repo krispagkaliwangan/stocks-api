@@ -2,7 +2,7 @@ package ph.krisp.stocks.connection;
 
 import java.util.concurrent.Callable;
 
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 
 /**
  * Downloads a single page of Stock and parses all required stock information
@@ -13,7 +13,7 @@ import ph.krisp.stocks.model.Stock;
 public class StockPage implements Callable<StockPage>{
 
 	private String stockCode;
-	private Stock stock;
+	private StockRaw stock;
 	
 	public StockPage(String stockCode) {
 		this.stockCode = stockCode;
@@ -28,7 +28,7 @@ public class StockPage implements Callable<StockPage>{
 		return this;
 	}
 
-	public Stock getStock() {
+	public StockRaw getStock() {
 		return stock;
 	}
 

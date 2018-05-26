@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ph.krisp.stocks.connection.Investagrams;
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 
 public class CsvUtilsTest {
 
@@ -22,7 +22,7 @@ public class CsvUtilsTest {
 	public void testUpdateStockFile() {
 		
 		try {
-			Stock stock = Investagrams.getStock("SMPH");
+			StockRaw stock = Investagrams.getStock("SMPH");
 //			System.out.println(JsonUtils.objectToJson(stock));
 			CsvUtils.updateStockFile(stock);
 		} catch (IOException e) {

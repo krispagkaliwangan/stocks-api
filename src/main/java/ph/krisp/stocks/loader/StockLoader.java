@@ -1,6 +1,6 @@
 package ph.krisp.stocks.loader;
 
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.utils.WebUtils;
 
 /**
@@ -15,7 +15,7 @@ public class StockLoader {
 	
 	private StockLoader() {}
 	
-	public static Stock loadStock(String stockCode, int depth) {
+	public static StockRaw loadStock(String stockCode, int depth) {
 		
 		
 		

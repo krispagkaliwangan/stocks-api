@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import ph.krisp.stocks.model.Stock;
+import ph.krisp.stocks.model.StockRaw;
 
 /**
  * Manages the stock page task downloading and parsing of information
@@ -27,7 +27,7 @@ public class StockPageManager {
 	private Set<String> stockSet;
 	private List<Future<StockPage>> futures = new ArrayList<>();
 	private ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
-	private Map<String, Stock> stockInfo;
+	private Map<String, StockRaw> stockInfo;
 
 	public StockPageManager(Set<String> stockSet) {
 		super();
@@ -77,7 +77,7 @@ public class StockPageManager {
 		return (futures.size() > 0);
 	}
 
-	public Map<String, Stock> getStockInfo() {
+	public Map<String, StockRaw> getStockInfo() {
 		return stockInfo;
 	}
 	
