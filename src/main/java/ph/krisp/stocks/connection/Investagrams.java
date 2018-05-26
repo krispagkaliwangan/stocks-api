@@ -16,7 +16,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import ph.krisp.stocks.connection.multithread.StockPageManager;
 import ph.krisp.stocks.model.Stock;
 import ph.krisp.stocks.utils.WebUtils;
 

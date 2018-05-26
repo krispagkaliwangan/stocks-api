@@ -1,4 +1,4 @@
-package ph.krisp.stocks.connection.multithread;
+package ph.krisp.stocks.connection;
 
 import java.util.ArrayList;
 import java.util.HashMap;

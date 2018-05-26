@@ -1,8 +1,7 @@
-package ph.krisp.stocks.connection.multithread;
+package ph.krisp.stocks.connection;
 
 import java.util.concurrent.Callable;
 
-import ph.krisp.stocks.connection.Investagrams;
 import ph.krisp.stocks.model.Stock;
 
 /**
