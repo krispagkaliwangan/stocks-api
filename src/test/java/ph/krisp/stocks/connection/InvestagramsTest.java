@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import ph.krisp.stocks.loader.StockLoader;
 import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.utils.JsonUtils;
 import ph.krisp.stocks.utils.WebUtils;
@@ -19,7 +20,7 @@ public class InvestagramsTest {
 	@Before
 	public void setUp() throws Exception {
 		Investagrams.login();
-		assertEquals(60, WebUtils.getAllKeySet().size());
+		assertEquals(60, StockLoader.getAllKeySet().size());
 	}
 
 	@Test

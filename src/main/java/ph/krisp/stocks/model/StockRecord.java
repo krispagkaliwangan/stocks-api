@@ -2,6 +2,8 @@ package ph.krisp.stocks.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Class containing one record of stock information ready for analysis
@@ -26,11 +28,21 @@ public class StockRecord {
 	private BigDecimal value;
 	private BigDecimal netForeign;
 	
+	private Map<String, BigDecimal> info;
 	
 	public StockRecord(String code) {
 		this.code = code;
+		this.info = new LinkedHashMap<>();
 	}
 
+	public void putInfo(String key, BigDecimal value) {
+		this.info.put(key, value);
+	}
+	
+	public BigDecimal getInfo(String key) {
+		return this.info.get(key);
+	}
+	
 	public String getCode() {
 		return code;
 	}
