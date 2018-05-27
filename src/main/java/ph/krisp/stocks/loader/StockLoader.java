@@ -15,6 +15,7 @@ import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.model.StockRecord;
 import ph.krisp.stocks.utils.CalcUtils;
 import ph.krisp.stocks.utils.CsvUtils;
+import ph.krisp.stocks.utils.WebUtils;
 
 /**
  * Class containing methods for loading Stock information from saved files
@@ -45,7 +46,7 @@ public class StockLoader {
 	 * @return all keySet of the stock data
 	 */
 	public static Set<String> getAllKeySet() {
-		String keyset = "date,Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign,52-Week High,Earnings Per Share TTM (EPS),Price to Book Value (P/BV),52-Week Low,Price-Earnings Ratio TTM (P/E),Return on Equity (ROE),Fair Value,Dividends Per Share (DPS),Recommendation,Support 1,Resistance 1,Short-Term Trend,Support 2,Resistance 2,Recommendation-2,Last Price-2,Year to Date %,Month to Date %,MA 20 Simple,MA 20 Simple Action,MA 20 Exp,MA 20 Exp Action,MA 50 Simple,MA 50 Simple Action,MA 50 Exp,MA 50 Exp Action,MA 100 Simple,MA 100 Simple Action,MA 100 Exp,MA 100 Exp Action,MA 200 Simple,MA 200 Simple Action,MA 200 Exp,MA 200 Exp Action,RSI(14),RSI(14) Action,MACD(12269),MACD(12269) Action,ATR(14),ATR(14) Action,CCI(20),CCI(20) Action,STS(1433),STS(1433) Action,Williams %R(14),Williams %R(14) Action,VolumeSMA(15),VolumeSMA(15) Action,CandleStick(1),CandleStick(1) Action";
+		String keyset = WebUtils.getAllKeySet();
 		return new LinkedHashSet<>(Arrays.asList(keyset.split("\\s*,\\s*")));
 	}
 
@@ -54,8 +55,7 @@ public class StockLoader {
 	 * @return all keySet for stock information with the number data type
 	 */
 	public static Set<String> getAmountKeySet() {
-		//String keyset = "Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign";
-		String keyset = "Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign,52-Week High,Price to Book Value (P/BV),52-Week Low,Price-Earnings Ratio TTM (P/E),Return on Equity (ROE),Support 1,Resistance 1,Support 2,Resistance 2,Last Price-2,Year to Date %,Month to Date %,MA 20 Simple,MA 20 Exp,MA 50 Simple,MA 50 Exp,MA 100 Simple,MA 100 Exp,MA 200 Simple,MA 200 Exp,RSI(14),CCI(20),STS(1433),Williams %R(14),VolumeSMA(15)";
+		String keyset = WebUtils.getNumberKeySet();
 		return new LinkedHashSet<>(Arrays.asList(keyset.split("\\s*,\\s*")));
 	}
 
@@ -84,7 +84,7 @@ public class StockLoader {
 			stockRecords.put(stockCode, StockLoader.loadStockRecord(stockCode, depth));
 		}
     	logger.info("Stock data (" + stockRecords.size()
-		+ ") loaded. Elapsed: " + (System.nanoTime()-startTime)/1000000.00 + "ms");
+			+ ") loaded. Elapsed: " + (System.nanoTime()-startTime)/1000000.00 + "ms");
 	
 		return stockRecords;
 	}
@@ -129,7 +129,7 @@ public class StockLoader {
 				CalcUtils.parseDate(raw.getProperty("date")));
 
 		for(String property : StockLoader.getAllKeySet()) {
-			// if property is amount
+			// if property is a number
 			if(getAmountKeySet().contains(property)) {
 				stock.putInfo(property, CalcUtils.parseNumber(raw.getProperty(property)));
 			}

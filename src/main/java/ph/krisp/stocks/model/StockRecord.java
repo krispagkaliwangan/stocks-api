@@ -1,6 +1,5 @@
 package ph.krisp.stocks.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,10 +34,6 @@ public class StockRecord {
 	public void putInfo(String key, Object value) {
 		this.info.put(key, value);
 	}
-	
-//	public void putInfo(String key, String value) {
-//		this.info.put(key, value);
-//	}
 	
 	public Object getInfo(String key) {
 		return this.info.get(key);
