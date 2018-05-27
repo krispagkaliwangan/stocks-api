@@ -32,9 +32,13 @@ public class StockRecord {
 		return date;
 	}
 
-	public void putInfo(String key, BigDecimal value) {
+	public void putInfo(String key, Object value) {
 		this.info.put(key, value);
 	}
+	
+//	public void putInfo(String key, String value) {
+//		this.info.put(key, value);
+//	}
 	
 	public Object getInfo(String key) {
 		return this.info.get(key);

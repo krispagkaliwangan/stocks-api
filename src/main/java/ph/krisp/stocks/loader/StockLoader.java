@@ -51,8 +51,7 @@ public class StockLoader {
 
 	/**
 	 * 
-	 * @return all keySet for stock information, not including f-analysis and
-	 *         t-analysis
+	 * @return all keySet for stock information with the number data type
 	 */
 	public static Set<String> getAmountKeySet() {
 		//String keyset = "Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign";
@@ -134,12 +133,10 @@ public class StockLoader {
 			if(getAmountKeySet().contains(property)) {
 				stock.putInfo(property, CalcUtils.parseNumber(raw.getProperty(property)));
 			}
-			// if string
-//			else if() {
-//				
-//			}
 			// default
-			
+			else {
+				stock.putInfo(property, raw.getProperty(property));
+			}
 			
 		}
 		

@@ -52,6 +52,15 @@ public class StockAnalysis {
 	public Map<String, List<StockRecord>> filterByInfo(String info, BigDecimal value) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
+		
+		// if given info key does not exist
+		if(!StockLoader.getAllKeySet().contains(info)) {
+	    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+    				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+			return filteredStocks;
+		}
+		
+		// loop thru all
 		for(List<StockRecord> records : this.input.values()) {
 			//get last record
 			StockRecord rec = records.get(records.size()-1);
@@ -61,14 +70,17 @@ public class StockAnalysis {
 				continue;
 			}
 			
-			BigDecimal infoValue = (BigDecimal) rec.getInfo(info);
-			if(infoValue.compareTo(value) >= 0) {
-				filteredStocks.put(rec.getCode(), records);
+			// check if key contains a number value
+			if(StockLoader.getAmountKeySet().contains(info)) {
+				BigDecimal infoValue = (BigDecimal) rec.getInfo(info);
+				if(infoValue.compareTo(value) >= 0) {
+					filteredStocks.put(rec.getCode(), records);
+				}
 			}
+
 		}
-    	logger.info("Stock data (" + input.size()
-		+ ") processed. Elapsed: " + (System.nanoTime()-startTime)/1000000.00 + "ms");
-	
+    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
 		return filteredStocks;
 	}
 	

@@ -17,6 +17,12 @@ public class StockLoaderTest {
 	}
 
 	@Test
+	public void testAmountKeyset() {
+		System.out.println(JsonUtils.objectToJson(StockLoader.getAmountKeySet()));
+		assertEquals(36, StockLoader.getAmountKeySet().size());
+	}
+	
+	@Test
 	public void testLatestHelper() {
 		StockLoader.loadAllStockRecord(5);
 		System.out.println(JsonUtils.objectToJson(StockLoader.getLatestHelper()));
