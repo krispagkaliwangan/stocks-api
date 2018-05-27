@@ -48,8 +48,34 @@ public class StockLoader {
 	}
 
 	/**
+	 * Retrieves the set of stockCodes currently in the directory
+	 * 
+	 * @return the set of stockCodes
+	 */
+	public static Set<String> getStockKeySet() {
+		return CsvUtils.getFileNames();
+	}
+
+	/**
+	 * Loads all stock records from the storage file with the given depth
+	 * 
+	 * @param depth
+	 *            the number of records to be retrieved for each stock
+	 * @return the Map of key-value pairs representing stockCode and its
+	 *         corresponding StockRecord with the given depth
+	 */
+	public static Map<String, List<StockRecord>> loadAllStockRecord(int depth) {
+		Map<String, List<StockRecord>> stockRecords = new HashMap<>();
+		
+		for(String stockCode : StockLoader.getStockKeySet()) {
+			stockRecords.put(stockCode, StockLoader.loadStockRecord(stockCode, depth));
+		}
+		return stockRecords;
+	}
+	
+	/**
 	 * Loads the stock records from the storage file. Parses the csv file for
-	 * the stock raw information. Converts each stock raw object ot a stock
+	 * the stock raw information. Converts each stock raw object to a stock
 	 * record object. The number of records loaded is determined by depth.
 	 * 
 	 * @param stockCode
@@ -59,7 +85,7 @@ public class StockLoader {
 	 * @return the stock records equal to the specified depth or all records if
 	 *         depth is greater than number of records saved in the file
 	 */
-	public static List<StockRecord> loadStockRecords(String stockCode, int depth) {
+	public static List<StockRecord> loadStockRecord(String stockCode, int depth) {
 		List<StockRecord> stockRecords = new ArrayList<>();
 		List<StockRaw> stockRaws = CsvUtils.loadStock(stockCode, depth);
 

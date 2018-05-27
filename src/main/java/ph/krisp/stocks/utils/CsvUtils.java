@@ -18,6 +18,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import ph.krisp.stocks.loader.StockLoader;
@@ -36,6 +37,24 @@ public class CsvUtils {
 	private static final String DIR = WebUtils.getOutputPath();
 	
 	private CsvUtils() {}
+	
+	/**
+	 * Get the set of filenames currently in the directory
+	 * 
+	 * @return the set of filenames
+	 */
+	public static Set<String> getFileNames() {
+		File folder = new File(DIR);
+		File[] listOfFiles = folder.listFiles();
+		
+		Set<String> stockCodes = new LinkedHashSet<>();
+		for (int i = 0; i < listOfFiles.length; i++) {
+			if (listOfFiles[i].isFile()) {
+				stockCodes.add(FilenameUtils.removeExtension(listOfFiles[i].getName()));
+			}
+		}
+		return stockCodes;
+	}
 	
 	/**
 	 * Loads the raw stock data starting from the most recent up to a certain

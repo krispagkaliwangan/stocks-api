@@ -1,5 +1,7 @@
 package ph.krisp.stocks.utils;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,11 @@ public class CsvUtilsTest {
 
 	}
 
+	@Test
+	public void testGetFileNames() {
+		assertTrue(CsvUtils.getFileNames().size() > 0);
+	}
+	
 	@Test
 	public void testLoadStock() {
 		String stockCode = "NOW";

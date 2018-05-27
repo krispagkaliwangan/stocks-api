@@ -28,7 +28,7 @@ public class StockRecord {
 	private BigDecimal value;
 	private BigDecimal netForeign;
 	
-	private Map<String, BigDecimal> info;
+	private Map<String, Object> info;
 	
 	public StockRecord(String code) {
 		this.code = code;
@@ -39,7 +39,7 @@ public class StockRecord {
 		this.info.put(key, value);
 	}
 	
-	public BigDecimal getInfo(String key) {
+	public Object getInfo(String key) {
 		return this.info.get(key);
 	}
 	

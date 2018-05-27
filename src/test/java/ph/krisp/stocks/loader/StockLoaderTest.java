@@ -19,7 +19,7 @@ public class StockLoaderTest {
 	@Test
 	public void test() {
 		int depth = 2;
-		List<StockRecord> records = StockLoader.loadStockRecords("NOW", depth);
+		List<StockRecord> records = StockLoader.loadStockRecord("NOW", depth);
 		
 		assertEquals(depth, records.size());
 		
