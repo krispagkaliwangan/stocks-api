@@ -1,13 +1,18 @@
 package ph.krisp.stocks.utils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+
+import ph.krisp.stocks.loader.StockLoader;
+import ph.krisp.stocks.model.StockRecord;
 
 /**
  * Various calculation methods
@@ -34,6 +39,40 @@ public class CalcUtils {
 		modifiers.put("M", new BigDecimal("1000000"));
 		modifiers.put("B", new BigDecimal("1000000000"));
 		return modifiers;
+	}
+	
+	/**
+	 * Calculates the average of the given property across the given list of
+	 * StockRecord
+	 * 
+	 * @param records
+	 *            the list of stock records
+	 * @param property
+	 *            the property to be averaged
+	 * @return the average value of the property across the records
+	 */
+	public static BigDecimal calculateAverage(List<StockRecord> records, String property) {
+
+		// if property is not a number
+		if(!StockLoader.getAmountKeySet().contains(property)) {
+			logger.info("Trying to average non-number property [" + property + "]."
+					+ " Returning zero.");
+			return BigDecimal.ZERO;
+		}
+		
+		// if records is empty
+		if(records.size() == 0) {
+			logger.info("Trying to average zero sized records. Returning zero.");
+			return BigDecimal.ZERO;
+		}
+		
+		// summation and divide by size
+		BigDecimal total = BigDecimal.ZERO;
+		for(int i=0; i<records.size(); i++) {
+			BigDecimal volume = (BigDecimal) records.get(i).getInfo("Volume");
+			total = total.add(volume);
+		}
+		return total.divide(new BigDecimal(records.size()), 5, RoundingMode.HALF_UP);
 	}
 	
 	/**
