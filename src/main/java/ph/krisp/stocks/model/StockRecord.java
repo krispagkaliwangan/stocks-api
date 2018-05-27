@@ -1,6 +1,5 @@
 package ph.krisp.stocks.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,31 +15,12 @@ public class StockRecord {
 	private String code;
 	private Date date;
 	
-	private BigDecimal close;
-	private BigDecimal change;
-	private BigDecimal percentChange;
-	private BigDecimal prevClose;
-	private BigDecimal open;
-	private BigDecimal low;
-	private BigDecimal high;
-	private BigDecimal avePrice;
-	private BigDecimal volume;
-	private BigDecimal value;
-	private BigDecimal netForeign;
+	private Map<String, Object> info;
 	
-	private Map<String, BigDecimal> info;
-	
-	public StockRecord(String code) {
+	public StockRecord(String code, Date date) {
 		this.code = code;
+		this.date = date;
 		this.info = new LinkedHashMap<>();
-	}
-
-	public void putInfo(String key, BigDecimal value) {
-		this.info.put(key, value);
-	}
-	
-	public BigDecimal getInfo(String key) {
-		return this.info.get(key);
 	}
 	
 	public String getCode() {
@@ -51,98 +31,13 @@ public class StockRecord {
 		return date;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void putInfo(String key, Object value) {
+		this.info.put(key, value);
 	}
-
-	public BigDecimal getClose() {
-		return close;
+	
+	public Object getInfo(String key) {
+		return this.info.get(key);
 	}
-
-	public void setClose(BigDecimal close) {
-		this.close = close;
-	}
-
-	public BigDecimal getChange() {
-		return change;
-	}
-
-	public void setChange(BigDecimal change) {
-		this.change = change;
-	}
-
-	public BigDecimal getPercentChange() {
-		return percentChange;
-	}
-
-	public void setPercentChange(BigDecimal percentChange) {
-		this.percentChange = percentChange;
-	}
-
-	public BigDecimal getPrevClose() {
-		return prevClose;
-	}
-
-	public void setPrevClose(BigDecimal prevClose) {
-		this.prevClose = prevClose;
-	}
-
-	public BigDecimal getOpen() {
-		return open;
-	}
-
-	public void setOpen(BigDecimal open) {
-		this.open = open;
-	}
-
-	public BigDecimal getLow() {
-		return low;
-	}
-
-	public void setLow(BigDecimal low) {
-		this.low = low;
-	}
-
-	public BigDecimal getHigh() {
-		return high;
-	}
-
-	public void setHigh(BigDecimal high) {
-		this.high = high;
-	}
-
-	public BigDecimal getAvePrice() {
-		return avePrice;
-	}
-
-	public void setAvePrice(BigDecimal avePrice) {
-		this.avePrice = avePrice;
-	}
-
-	public BigDecimal getVolume() {
-		return volume;
-	}
-
-	public void setVolume(BigDecimal volume) {
-		this.volume = volume;
-	}
-
-	public BigDecimal getValue() {
-		return value;
-	}
-
-	public void setValue(BigDecimal value) {
-		this.value = value;
-	}
-
-	public BigDecimal getNetForeign() {
-		return netForeign;
-	}
-
-	public void setNetForeign(BigDecimal netForeign) {
-		this.netForeign = netForeign;
-	}
-
 	
 	
 }

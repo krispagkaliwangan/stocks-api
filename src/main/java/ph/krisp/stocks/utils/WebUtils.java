@@ -41,6 +41,14 @@ public class WebUtils {
 		return properties.getProperty("output_path");
 	}
 	
+	public static String getAllKeySet() {
+		return properties.getProperty("keyset");
+	}
+	
+	public static String getNumberKeySet() {
+		return properties.getProperty("numbers");
+	}
+	
 	/**
 	 * Load the login properties
 	 * 
@@ -57,6 +65,7 @@ public class WebUtils {
 			prop.getProperty("password");
 			prop.getProperty("output_path");
 			prop.getProperty("keyset");
+			prop.getProperty("numbers");
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
