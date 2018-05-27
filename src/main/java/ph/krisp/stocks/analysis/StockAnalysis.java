@@ -1,6 +1,7 @@
 package ph.krisp.stocks.analysis;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,9 +13,18 @@ import org.apache.log4j.Logger;
 
 import ph.krisp.stocks.loader.StockLoader;
 import ph.krisp.stocks.model.StockRecord;
+import ph.krisp.stocks.utils.CalcUtils;
 
 /**
  * Performs analysis against the stock records
+ * 
+ * TODO: convert to a processor class
+ * TODO: create a new StockAnalysis class as model
+ * 
+ * -input
+ * -output
+ * -result
+ * -analysis made
  * 
  * @author kris.pagkaliwangan
  *
@@ -27,6 +37,7 @@ public class StockAnalysis {
 
 	public StockAnalysis(Map<String, List<StockRecord>> input) {
 		this.input = input;
+		// TODO: input should only contain latest data
 	}
 	
 	public Set<String> inputKeySet() {
@@ -82,6 +93,41 @@ public class StockAnalysis {
     	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
 		return filteredStocks;
+	}
+	
+	/**
+	 * Filters all stocks that met the volume spike criteria
+	 * 
+	 * @return all stocks that met the volume spike criteria
+	 */
+	public Map<String, List<StockRecord>> filterByVolumeSpike(BigDecimal threshold) {
+		long startTime = System.nanoTime();
+		Map<String, List<StockRecord>> filtered = new HashMap<>();
+		String volume = "Volume";
+		// loop thru all
+		for(List<StockRecord> records : this.input.values()) {
+			// if records will result averaging to zero
+			if(records.size()-1 == 0) {
+				continue;
+			}
+			
+			// calculate average up to last day,
+			List<StockRecord> toAverage = records.subList(0, records.size()-1);
+			BigDecimal average = CalcUtils.calculateAverage(toAverage, volume);
+			BigDecimal lastVolume = (BigDecimal) records.get(records.size()-1).getInfo(volume);
+			
+			// compare value of last day to average
+			BigDecimal diff = lastVolume.divide(average, 5, RoundingMode.HALF_UP);
+			
+			// value should be greater than threshold
+			if(diff.compareTo(threshold) >= 0) {
+				filtered.put(records.get(0).getCode(), records);
+			}
+		}
+		
+    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+		return filtered;
 	}
 	
 }

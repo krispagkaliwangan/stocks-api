@@ -62,7 +62,7 @@ public class CsvUtils {
 	 * 
 	 * @param stockCode
 	 * @param depth
-	 *            the number of records to be retrieved
+	 *            the number of records to be retrieved starting from the last
 	 * @return the list of StockRaw objects with size equal to the specified
 	 *         depth or all records if depth is greater than number of records
 	 *         saved in the file
@@ -76,6 +76,7 @@ public class CsvUtils {
 			
 			List<CSVRecord> csvRecords = csvParser.getRecords();
 			
+			// calculates the starting index
 			int start = csvRecords.size()-depth;
 			if(depth >= csvRecords.size()) {
 				start = 0;
