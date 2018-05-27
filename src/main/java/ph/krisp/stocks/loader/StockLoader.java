@@ -54,8 +54,9 @@ public class StockLoader {
 	 * @return all keySet for stock information, not including f-analysis and
 	 *         t-analysis
 	 */
-	public static Set<String> getInfoKeySet() {
-		String keyset = "Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign";
+	public static Set<String> getAmountKeySet() {
+		//String keyset = "Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign";
+		String keyset = "Last Price,Change,%Change,Previous Close,Open,Low,High,Average Price,Volume,Value,Net Foreign,52-Week High,Price to Book Value (P/BV),52-Week Low,Price-Earnings Ratio TTM (P/E),Return on Equity (ROE),Support 1,Resistance 1,Support 2,Resistance 2,Last Price-2,Year to Date %,Month to Date %,MA 20 Simple,MA 20 Exp,MA 50 Simple,MA 50 Exp,MA 100 Simple,MA 100 Exp,MA 200 Simple,MA 200 Exp,RSI(14),CCI(20),STS(1433),Williams %R(14),VolumeSMA(15)";
 		return new LinkedHashSet<>(Arrays.asList(keyset.split("\\s*,\\s*")));
 	}
 
@@ -125,15 +126,23 @@ public class StockLoader {
 	 * @return the stock record object with data from the raw stock object
 	 */
 	private static StockRecord convertStockRawToRecord(StockRaw raw) {
-		StockRecord stock = new StockRecord(raw.getCode());
+		StockRecord stock = new StockRecord(raw.getCode(),
+				CalcUtils.parseDate(raw.getProperty("date")));
 
-		for(String property : StockLoader.getInfoKeySet()) {
-			stock.putInfo(property, CalcUtils.parseNumber(raw.getProperty(property)));
+		for(String property : StockLoader.getAllKeySet()) {
+			// if property is amount
+			if(getAmountKeySet().contains(property)) {
+				stock.putInfo(property, CalcUtils.parseNumber(raw.getProperty(property)));
+			}
+			// if string
+//			else if() {
+//				
+//			}
+			// default
+			
+			
 		}
 		
-		Date date = CalcUtils.parseDate(raw.getProperty("date"));
-		stock.setDate(date);
-
 		return stock;
 	}
 	

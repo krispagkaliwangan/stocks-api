@@ -18,17 +18,10 @@ public class StockRecord {
 	
 	private Map<String, Object> info;
 	
-	public StockRecord(String code) {
+	public StockRecord(String code, Date date) {
 		this.code = code;
+		this.date = date;
 		this.info = new LinkedHashMap<>();
-	}
-
-	public void putInfo(String key, BigDecimal value) {
-		this.info.put(key, value);
-	}
-	
-	public Object getInfo(String key) {
-		return this.info.get(key);
 	}
 	
 	public String getCode() {
@@ -39,10 +32,13 @@ public class StockRecord {
 		return date;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void putInfo(String key, BigDecimal value) {
+		this.info.put(key, value);
 	}
-
+	
+	public Object getInfo(String key) {
+		return this.info.get(key);
+	}
 	
 	
 }

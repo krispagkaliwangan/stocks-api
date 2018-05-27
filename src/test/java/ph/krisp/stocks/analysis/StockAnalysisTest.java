@@ -16,8 +16,6 @@ import ph.krisp.stocks.utils.JsonUtils;
 
 public class StockAnalysisTest {
 
-	
-	
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -25,7 +23,8 @@ public class StockAnalysisTest {
 	@Test
 	public void test() {
 		StockAnalysis stockAnalysis = new StockAnalysis(StockLoader.loadAllStockRecord(1));
-		Map<String, List<StockRecord>> filteredStocks = stockAnalysis.filterByInfo("%Change", new BigDecimal("5"));
+		Map<String, List<StockRecord>> filteredStocks
+			= stockAnalysis.filterByInfo("%Change", new BigDecimal("10"));
 		
 		System.out.println(JsonUtils.objectToJson(filteredStocks));
 		System.out.println(JsonUtils.objectToJson(filteredStocks.keySet()));

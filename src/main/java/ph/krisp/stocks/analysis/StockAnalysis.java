@@ -41,10 +41,9 @@ public class StockAnalysis {
 		return this.input.get(key);
 	}
 	
-
-	
 	/**
-	 * Filters the input stocks by the info and the corresponding value
+	 * Filters the input stocks by the info and the corresponding value.
+	 * Outdated records are ignored.
 	 * 
 	 * @param info
 	 * @param value
