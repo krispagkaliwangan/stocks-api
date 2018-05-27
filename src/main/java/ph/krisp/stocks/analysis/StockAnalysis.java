@@ -1,6 +1,8 @@
 package ph.krisp.stocks.analysis;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import ph.krisp.stocks.loader.StockLoader;
 import ph.krisp.stocks.model.StockRecord;
 
 /**
@@ -30,15 +33,38 @@ public class StockAnalysis {
 		return this.input.keySet();
 	}
 	
-	public Set<String> filterByInfo(String info, BigDecimal value) {
+	public Collection<List<StockRecord>> values() {
+		return this.input.values();
+	}
+	
+	public List<StockRecord> get(String key) {
+		return this.input.get(key);
+	}
+	
+
+	
+	/**
+	 * Filters the input stocks by the info and the corresponding value
+	 * 
+	 * @param info
+	 * @param value
+	 * @return the filtered set of stock codes
+	 */
+	public Map<String, List<StockRecord>> filterByInfo(String info, BigDecimal value) {
 		long startTime = System.nanoTime();
-		Set<String> filteredStocks = new HashSet<>();
+		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
 		for(List<StockRecord> records : this.input.values()) {
 			//get last record
 			StockRecord rec = records.get(records.size()-1);
+			
+			// check if record is latest, ignore if not
+			if(rec.getDate().compareTo(StockLoader.getLatestDate()) < 0 ) {
+				continue;
+			}
+			
 			BigDecimal infoValue = (BigDecimal) rec.getInfo(info);
 			if(infoValue.compareTo(value) >= 0) {
-				filteredStocks.add(rec.getCode());
+				filteredStocks.put(rec.getCode(), records);
 			}
 		}
     	logger.info("Stock data (" + input.size()

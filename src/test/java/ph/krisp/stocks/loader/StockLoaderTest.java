@@ -17,6 +17,13 @@ public class StockLoaderTest {
 	}
 
 	@Test
+	public void testLatestHelper() {
+		StockLoader.loadAllStockRecord(5);
+		System.out.println(JsonUtils.objectToJson(StockLoader.getLatestHelper()));
+		System.out.println(JsonUtils.objectToJson(StockLoader.getLatestDate()));
+	}
+	
+	@Test
 	public void test() {
 		int depth = 2;
 		List<StockRecord> records = StockLoader.loadStockRecord("NOW", depth);

@@ -1,7 +1,5 @@
 package ph.krisp.stocks.loader;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -17,7 +15,6 @@ import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.model.StockRecord;
 import ph.krisp.stocks.utils.CalcUtils;
 import ph.krisp.stocks.utils.CsvUtils;
-import ph.krisp.stocks.utils.WebUtils;
 
 /**
  * Class containing methods for loading Stock information from saved files
@@ -29,9 +26,20 @@ public class StockLoader {
 
 	private static final Logger logger = Logger.getLogger("StockLoader");
 	
-	private StockLoader() {
-	}
+	/* Latest date to use for filters */
+	private static Date latest;
+	private static Map<Date, Integer> latestHelper = new HashMap<>();
+	
+	private StockLoader() {}
 
+	public static Date getLatestDate() {
+		return latest;
+	}
+	
+	public static Map<Date, Integer> getLatestHelper() {
+		return latestHelper;
+	}
+	
 	/**
 	 * 
 	 * @return all keySet of the stock data
@@ -71,7 +79,7 @@ public class StockLoader {
 	public static Map<String, List<StockRecord>> loadAllStockRecord(int depth) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> stockRecords = new HashMap<>();
-		
+		latestHelper.clear();
 		for(String stockCode : StockLoader.getStockKeySet()) {
 			stockRecords.put(stockCode, StockLoader.loadStockRecord(stockCode, depth));
 		}
@@ -100,6 +108,12 @@ public class StockLoader {
 		for (StockRaw raw : stockRaws) {
 			stockRecords.add(StockLoader.convertStockRawToRecord(raw));
 		}
+		
+		// update the latest date
+		if(stockRecords.size() > 0) {
+			updateLatest(stockRecords.get(stockRecords.size()-1).getDate());
+		}
+		
 		return stockRecords;
 	}
 
@@ -120,40 +134,26 @@ public class StockLoader {
 		Date date = CalcUtils.parseDate(raw.getProperty("date"));
 		stock.setDate(date);
 
-		BigDecimal close = CalcUtils.parseNumber(raw.getProperty("Last Price"));
-		stock.setChange(close);
-
-		BigDecimal change = CalcUtils.parseNumber(raw.getProperty("Change"));
-		stock.setChange(change);
-
-		BigDecimal percentChange = CalcUtils.parseNumber(raw.getProperty("%Change"));
-		stock.setPercentChange(percentChange);
-
-		BigDecimal prevClose = CalcUtils.parseNumber(raw.getProperty("Previous Close"));
-		stock.setPrevClose(prevClose);
-
-		BigDecimal open = CalcUtils.parseNumber(raw.getProperty("Open"));
-		stock.setOpen(open);
-
-		BigDecimal low = CalcUtils.parseNumber(raw.getProperty("Low"));
-		stock.setLow(low);
-
-		BigDecimal high = CalcUtils.parseNumber(raw.getProperty("High"));
-		stock.setHigh(high);
-
-		BigDecimal avePrice = CalcUtils.parseNumber(raw.getProperty("Average Price"));
-		stock.setAvePrice(avePrice);
-
-		BigDecimal volume = CalcUtils.parseNumber(raw.getProperty("Volume"));
-		stock.setVolume(volume);
-
-		BigDecimal value = CalcUtils.parseNumber(raw.getProperty("Value"));
-		stock.setValue(value);
-
-		BigDecimal netForeign = CalcUtils.parseNumber(raw.getProperty("Net Foreign"));
-		stock.setNetForeign(netForeign);
-
 		return stock;
+	}
+	
+	/**
+	 * Update the latest date
+	 * 
+	 * @param date
+	 */
+	private static void updateLatest(Date date) {
+		if(latestHelper.containsKey(date)) {
+			latestHelper.put(date, latestHelper.get(date)+1);
+		} else {
+			latestHelper.put(date, 1);
+		}
+		if(latest == null) {
+			latest = date;
+		}
+		if(getLatestDate().compareTo(date) < 0) {
+			latest = date;
+		}
 	}
 
 }
