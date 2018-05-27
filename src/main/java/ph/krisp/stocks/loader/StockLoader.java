@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import ph.krisp.stocks.model.StockRaw;
 import ph.krisp.stocks.model.StockRecord;
 import ph.krisp.stocks.utils.CalcUtils;
@@ -25,6 +27,8 @@ import ph.krisp.stocks.utils.WebUtils;
  */
 public class StockLoader {
 
+	private static final Logger logger = Logger.getLogger("StockLoader");
+	
 	private StockLoader() {
 	}
 
@@ -65,11 +69,15 @@ public class StockLoader {
 	 *         corresponding StockRecord with the given depth
 	 */
 	public static Map<String, List<StockRecord>> loadAllStockRecord(int depth) {
+		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> stockRecords = new HashMap<>();
 		
 		for(String stockCode : StockLoader.getStockKeySet()) {
 			stockRecords.put(stockCode, StockLoader.loadStockRecord(stockCode, depth));
 		}
+    	logger.info("Stock data (" + stockRecords.size()
+		+ ") loaded. Elapsed: " + (System.nanoTime()-startTime)/1000000.00 + "ms");
+	
 		return stockRecords;
 	}
 	
