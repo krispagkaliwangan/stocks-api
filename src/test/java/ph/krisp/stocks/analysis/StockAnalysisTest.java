@@ -20,6 +20,18 @@ public class StockAnalysisTest {
 	public void setUp() throws Exception {
 	}
 
+	
+	@Test
+	public void testVolumeSpike() {
+		StockAnalysis volumeSpike
+			= new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		
+		Map<String, List<StockRecord>> filtered
+			= volumeSpike.filterByVolumeSpike(new BigDecimal("1.5"));
+
+		System.out.println(JsonUtils.objectToJson(filtered.keySet()));
+	}
+	
 	@Test
 	public void test() {
 		StockAnalysis stockAnalysis = new StockAnalysis(StockLoader.loadAllStockRecord(1));
