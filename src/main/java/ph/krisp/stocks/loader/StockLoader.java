@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -125,22 +126,23 @@ public class StockLoader {
 	 * @return the stock record object with data from the raw stock object
 	 */
 	private static StockRecord convertStockRawToRecord(StockRaw raw) {
-		StockRecord stock = new StockRecord(raw.getCode(),
-				CalcUtils.parseDate(raw.getProperty("date")));
 
+		Map<String, Object> info = new LinkedHashMap<>();
 		for(String property : StockLoader.getAllKeySet()) {
 			// if property is a number
 			if(getAmountKeySet().contains(property)) {
-				stock.putInfo(property, CalcUtils.parseNumber(raw.getProperty(property)));
+//				stockRecord.putInfo(property, CalcUtils.parseNumber(raw.getProperty(property)));
+				info.put(property, CalcUtils.parseNumber(raw.getProperty(property)));
 			}
 			// default
 			else {
-				stock.putInfo(property, raw.getProperty(property));
+//				stockRecord.putInfo(property, raw.getProperty(property));
+				info.put(property, raw.getProperty(property));
 			}
 			
 		}
-		
-		return stock;
+		return new StockRecord(raw.getCode(),
+				CalcUtils.parseDate(raw.getProperty("date")), info);
 	}
 	
 	/**
