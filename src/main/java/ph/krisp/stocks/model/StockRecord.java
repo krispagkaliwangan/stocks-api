@@ -27,7 +27,18 @@ public class StockRecord {
 		this.date = date;
 		this.info = new LinkedHashMap<>();
 	}
-	
+
+	/**
+	 * Constructor to calculate attributes that are expensive to calculate
+	 * outside this class. The info parameter is needed in the constructor to
+	 * ensure that all parameters are present before calculating the expensive
+	 * attributes.
+	 * 
+	 * @param code
+	 * @param date
+	 * @param info
+	 *            the key-value pairs of properties and values
+	 */
 	public StockRecord(String code, Date date, Map<String, Object> info) {
 		this.code = code;
 		this.date = date;
@@ -41,7 +52,9 @@ public class StockRecord {
 	 * when looping through all values
 	 */
 	private void calculateAttributes() {
-		// TODO Auto-generated method stub
+		// calculate range
+		this.range = ((BigDecimal) this.info.get("High"))
+				.subtract((BigDecimal) this.info.get("Low"));
 		
 	}
 
