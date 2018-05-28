@@ -20,6 +20,19 @@ public class StockAnalysisTest {
 	public void setUp() throws Exception {
 	}
 
+	@Test
+	public void testLongestRange() {
+		StockAnalysis longestRange
+		= new StockAnalysis(StockLoader.loadAllStockRecord(10));
+		
+		Map<String, List<StockRecord>> filtered
+		= longestRange.filterByLongestRange();
+
+		
+		System.out.println(JsonUtils.objectToJson(filtered.keySet()));
+		System.out.println("size=" + filtered.size());
+	}
+	
 	
 	@Test
 	public void testVolumeSpike() {
@@ -30,6 +43,7 @@ public class StockAnalysisTest {
 			= volumeSpike.filterByVolumeSpike(new BigDecimal("1.5"));
 
 		System.out.println(JsonUtils.objectToJson(filtered.keySet()));
+		System.out.println("size=" + filtered.size());
 	}
 	
 	@Test

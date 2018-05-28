@@ -1,5 +1,6 @@
 package ph.krisp.stocks.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,12 +18,33 @@ public class StockRecord {
 	
 	private Map<String, Object> info;
 	
+	// calculated attributes
+	private BigDecimal range;
+	
+	@Deprecated
 	public StockRecord(String code, Date date) {
 		this.code = code;
 		this.date = date;
 		this.info = new LinkedHashMap<>();
 	}
 	
+	public StockRecord(String code, Date date, Map<String, Object> info) {
+		this.code = code;
+		this.date = date;
+		this.info = info;
+		
+		this.calculateAttributes();
+	}
+	
+	/**
+	 * Calculate the required attributes that are expensive to calculate
+	 * when looping through all values
+	 */
+	private void calculateAttributes() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public String getCode() {
 		return code;
 	}

@@ -130,4 +130,33 @@ public class StockAnalysis {
 		return filtered;
 	}
 	
+	/**
+	 * Filters all stocks that meet the longest range criteria
+	 * 
+	 * @return all stocks that met the longest range criteria
+	 */
+	public Map<String, List<StockRecord>> filterByLongestRange() {
+		long startTime = System.nanoTime();
+		Map<String, List<StockRecord>> filtered = new HashMap<>();
+		
+		// loop thru all
+		for(List<StockRecord> records : this.input.values()) {
+			BigDecimal maxRange = BigDecimal.ZERO;
+			
+			// compute range of each stockRecord
+			
+			// update maxRange
+			
+			// check if range of latest is the maximum
+			
+			// add if it is
+		}
+		
+		
+		
+    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+		return filtered;
+	}
+	
 }
