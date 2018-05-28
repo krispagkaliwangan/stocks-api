@@ -21,12 +21,38 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void testVolumeSpikeAndLongestRange() {
+		// gain only
+		StockAnalysis sa1 = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		Map<String, List<StockRecord>> gainOnly
+			= sa1.filterByInfo("%Change", BigDecimal.ZERO);
+		
+		// volume spike
+		StockAnalysis sa2 = new StockAnalysis(gainOnly);
+		Map<String, List<StockRecord>> volumeSpike
+			= sa2.filterByVolumeSpike(new BigDecimal("1"));
+		
+		// longest range
+		StockAnalysis sa3 = new StockAnalysis(volumeSpike);
+		Map<String, List<StockRecord>> longestRange = sa3.filterByLongestRange();
+		
+		
+		
+		// print
+		System.out.println("gain only size=" + gainOnly.size());
+		System.out.println("volume spike size=" + volumeSpike.size());
+		System.out.println("longest range size=" + longestRange.size());
+		
+		System.out.println(JsonUtils.objectToJson(longestRange.keySet()));
+	}
+	
+	@Test
 	public void testLongestRange() {
 		StockAnalysis longestRange
-		= new StockAnalysis(StockLoader.loadAllStockRecord(10));
+			= new StockAnalysis(StockLoader.loadAllStockRecord(10));
 		
 		Map<String, List<StockRecord>> filtered
-		= longestRange.filterByLongestRange();
+			= longestRange.filterByLongestRange();
 
 		
 		System.out.println(JsonUtils.objectToJson(filtered.keySet()));

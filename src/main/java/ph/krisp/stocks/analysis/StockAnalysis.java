@@ -143,16 +143,20 @@ public class StockAnalysis {
 		for(List<StockRecord> records : this.input.values()) {
 			BigDecimal maxRange = BigDecimal.ZERO;
 			
-			// compute range of each stockRecord
-			
-			// update maxRange
-			
+			// get range of each stockRecord and update max
+			for(int i=0; i<records.size()-2; i++) {
+				BigDecimal range = records.get(i).getRange();
+				if(range.compareTo(maxRange) > 0) {
+					maxRange = range;
+				}
+			}
 			// check if range of latest is the maximum
+			if(records.get(records.size()-1).getRange().compareTo(maxRange) > 0) {
+				// add if it is
+				filtered.put(records.get(0).getCode(), records);
+			}
 			
-			// add if it is
 		}
-		
-		
 		
     	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");

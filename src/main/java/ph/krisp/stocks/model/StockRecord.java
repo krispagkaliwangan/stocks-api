@@ -74,5 +74,10 @@ public class StockRecord {
 		return this.info.get(key);
 	}
 	
+	// calculated attributes methods
+	public BigDecimal getRange() {
+		return range;
+	}
+	
 	
 }
