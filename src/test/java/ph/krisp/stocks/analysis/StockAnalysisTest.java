@@ -3,6 +3,7 @@ package ph.krisp.stocks.analysis;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,16 +22,32 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void testSingleStockAnalysis() {
+		// load single stock
+		String key = "ISM";
+		List<StockRecord> value = StockLoader.loadStockRecord(key, 40);
+		Map<String, List<StockRecord>> input = new HashMap<>();
+		input.put(key, value);
+		
+		// start analysis
+		StockAnalysis sa = new StockAnalysis(input);
+		Map<String, List<StockRecord>> longestRange = sa.filterByLongestRange();
+		
+		System.out.println("longest range size=" + longestRange.size());
+		System.out.println(JsonUtils.objectToJson(longestRange.keySet()));
+	}
+	
+	@Test
 	public void testVolumeSpikeAndLongestRange() {
 		// gain only
 		StockAnalysis sa1 = new StockAnalysis(StockLoader.loadAllStockRecord(40));
 		Map<String, List<StockRecord>> gainOnly
-			= sa1.filterByInfo("%Change", BigDecimal.ZERO);
+			= sa1.filterByInfo("%Change", new BigDecimal("3"));
 		
 		// volume spike
 		StockAnalysis sa2 = new StockAnalysis(gainOnly);
 		Map<String, List<StockRecord>> volumeSpike
-			= sa2.filterByVolumeSpike(new BigDecimal("1"));
+			= sa2.filterByVolumeSpike(new BigDecimal("1.25"));
 		
 		// longest range
 		StockAnalysis sa3 = new StockAnalysis(volumeSpike);
