@@ -42,6 +42,35 @@ public class CalcUtils {
 	}
 	
 	/**
+	 * Performs linear interpolation using this formula:
+	 * 	y = y1 + (x-x1)(y2-y1)/(x2-x1)
+	 * 
+	 * @param x 
+	 * @param x1
+	 * @param x2
+	 * @param y1
+	 * @param y2
+	 * @return y or zero if x2=x1
+	 */
+	public static BigDecimal linearInterpolation(BigDecimal x, BigDecimal x1,
+			BigDecimal x2, BigDecimal y1, BigDecimal y2) {
+		
+		// return zero if x2 == x1
+		if(x2.compareTo(x1) == 0) {
+			return BigDecimal.ZERO;
+		}
+		
+		// y = y1 + (x-x1)(y2-y1)/(x2-x1)
+		BigDecimal xMinusX1 = x.subtract(x1);
+		BigDecimal y2MinusY1 = y2.subtract(y1);
+		BigDecimal x2MinusX1 = x2.subtract(x1);
+		
+		return y1.add(
+					xMinusX1.multiply(y2MinusY1)
+					.divide(x2MinusX1, 5, RoundingMode.HALF_UP));
+	}
+	
+	/**
 	 * Calculates the average of the given property across the given list of
 	 * StockRecord
 	 * 

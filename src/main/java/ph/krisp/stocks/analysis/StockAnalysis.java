@@ -163,4 +163,39 @@ public class StockAnalysis {
 		return filtered;
 	}
 	
+	
+	/**
+	 * Filters all stocks that has a closing price greater than the threshold
+	 * percentage of its high
+	 * 
+	 * @param threshold
+	 * @return all stocks that met this criteria
+	 */
+	public Map<String, List<StockRecord>> filterByPercentCloseOverRange(BigDecimal threshold) {
+		long startTime = System.nanoTime();
+		Map<String, List<StockRecord>> filtered = new HashMap<>();
+		
+		// loop thru all
+		for (List<StockRecord> records : this.input.values()) {
+			StockRecord latestRecord = records.get(records.size()-1);
+			
+			BigDecimal x = (BigDecimal) latestRecord.getInfo("Last Price");
+			BigDecimal x1 = (BigDecimal) latestRecord.getInfo("High");
+			BigDecimal x2 = (BigDecimal) latestRecord.getInfo("Low");
+			BigDecimal y1 = BigDecimal.ONE;
+			BigDecimal y2 = BigDecimal.ZERO;
+			BigDecimal percentage = CalcUtils.linearInterpolation(x, x1, x2, y1, y2);
+			
+			// check if percentage is greater than or equal to threshold
+			if(percentage.compareTo(threshold) >= 0) {
+				// add if it is
+				filtered.put(latestRecord.getCode(), records);
+			}
+		}
+		
+    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+		return filtered;
+	}
+	
 }
