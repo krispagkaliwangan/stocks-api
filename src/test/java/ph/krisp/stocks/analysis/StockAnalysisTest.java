@@ -22,6 +22,36 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void test3Filters() {
+		// gain only
+		StockAnalysis sa1 = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		Map<String, List<StockRecord>> gainOnly
+			= sa1.filterByInfo("%Change", new BigDecimal("3"));
+		
+		// volume spike
+		StockAnalysis sa2 = new StockAnalysis(gainOnly);
+		Map<String, List<StockRecord>> volumeSpike
+			= sa2.filterByVolumeSpike(new BigDecimal("1.25"));
+		
+		// longest range
+		StockAnalysis sa3 = new StockAnalysis(volumeSpike);
+		Map<String, List<StockRecord>> longestRange = sa3.filterByLongestRange();
+		
+		// percent close range
+		StockAnalysis sa4 = new StockAnalysis(longestRange);
+		Map<String, List<StockRecord>> percentRange
+			= sa4.filterByPercentCloseOverRange(new BigDecimal("0.75"));
+		
+		
+		System.out.println("gain only size=" + gainOnly.size());
+		System.out.println("volume spike size=" + volumeSpike.size());
+		System.out.println("longest range size=" + longestRange.size());
+		System.out.println("percent close range size=" + percentRange.size());
+		
+		System.out.println(JsonUtils.objectToJson(volumeSpike.keySet()));
+	}
+	
+	@Test
 	public void testFilterByPercentCloseOverRange() {
 		StockAnalysis sa = new StockAnalysis(StockLoader.loadAllStockRecord(40));
 		
