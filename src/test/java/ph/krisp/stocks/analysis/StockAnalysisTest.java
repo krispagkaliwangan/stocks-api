@@ -22,6 +22,17 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void testFilterByPercentCloseOverRange() {
+		StockAnalysis sa = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		
+		Map<String, List<StockRecord>> result
+			= sa.filterByPercentCloseOverRange(new BigDecimal("0.9"));
+		
+		System.out.println("size=" + result.size());
+		System.out.println(JsonUtils.objectToJson(result.keySet()));
+	}
+	
+	@Test
 	public void testSingleStockAnalysis() {
 		// load single stock
 		String key = "ISM";
