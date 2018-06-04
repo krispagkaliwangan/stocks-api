@@ -26,7 +26,7 @@ public class StockAnalysisTest {
 		// gain only
 		StockAnalysis sa1 = new StockAnalysis(StockLoader.loadAllStockRecord(40));
 		Map<String, List<StockRecord>> gainOnly
-			= sa1.filterByInfo("%Change", new BigDecimal("3"));
+			= sa1.filterByInfo("%Change", new BigDecimal("1"));
 		
 		// volume spike
 		StockAnalysis sa2 = new StockAnalysis(gainOnly);
@@ -48,7 +48,12 @@ public class StockAnalysisTest {
 		System.out.println("longest range size=" + longestRange.size());
 		System.out.println("percent close range size=" + percentRange.size());
 		
+
+		System.out.println("Volume Spike:");
 		System.out.println(JsonUtils.objectToJson(volumeSpike.keySet()));
+		System.out.println("Percent Range:");
+		System.out.println(JsonUtils.objectToJson(percentRange.keySet()));
+
 	}
 	
 	@Test
@@ -65,14 +70,16 @@ public class StockAnalysisTest {
 	@Test
 	public void testSingleStockAnalysis() {
 		// load single stock
-		String key = "ISM";
+
+		String key = "IDC";
 		List<StockRecord> value = StockLoader.loadStockRecord(key, 40);
 		Map<String, List<StockRecord>> input = new HashMap<>();
 		input.put(key, value);
 		
 		// start analysis
 		StockAnalysis sa = new StockAnalysis(input);
-		Map<String, List<StockRecord>> longestRange = sa.filterByLongestRange();
+		Map<String, List<StockRecord>> longestRange
+			= sa.filterByPercentCloseOverRange(new BigDecimal("0.5"));
 		
 		System.out.println("longest range size=" + longestRange.size());
 		System.out.println(JsonUtils.objectToJson(longestRange.keySet()));
