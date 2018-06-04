@@ -22,6 +22,42 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void testResistanceAndVSpike() {
+		// gain only
+		StockAnalysis go = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		Map<String, List<StockRecord>> gainOnly
+			= go.filterByInfo("%Change", new BigDecimal("0.005"));
+		
+		// volume spike
+		StockAnalysis vs = new StockAnalysis(gainOnly);
+		Map<String, List<StockRecord>> volumeSpike
+			= vs.filterByVolumeSpike(new BigDecimal("1.25"));
+		
+		// near resistance
+		StockAnalysis nr = new StockAnalysis(volumeSpike);
+		Map<String, List<StockRecord>> nearResistance
+			= nr.filterByResistance1(new BigDecimal("-0.0005"));
+		
+		System.out.println("volume spike size=" + volumeSpike.size());
+		System.out.println("near resistance size=" + nearResistance.size());
+		
+		System.out.println("Volume Spike:");
+		System.out.println(JsonUtils.objectToJson(volumeSpike.keySet()));
+		System.out.println("Near Resistance");
+		System.out.println(JsonUtils.objectToJson(nearResistance.keySet()));
+	}
+	
+	@Test
+	public void testResistance1() {
+		StockAnalysis sa = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		Map<String, List<StockRecord>> nearResistance
+			= sa.filterByResistance1(new BigDecimal("-0.005"));
+		
+		System.out.println("Near Resistance");
+		System.out.println(JsonUtils.objectToJson(nearResistance.keySet()));
+	}
+	
+	@Test
 	public void test3Filters() {
 		// gain only
 		StockAnalysis sa1 = new StockAnalysis(StockLoader.loadAllStockRecord(40));
