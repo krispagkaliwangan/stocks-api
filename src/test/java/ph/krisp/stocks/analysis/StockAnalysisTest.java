@@ -22,6 +22,56 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void testAllFilters() {
+		BigDecimal gainParam = new BigDecimal("3"); // in percent
+		BigDecimal volumeSpikeParam = new BigDecimal("1.25"); // value * 100
+		BigDecimal percentRangeParam = new BigDecimal("0.75"); // value * 100
+		BigDecimal nearResistanceParam = new BigDecimal("-0.0005"); // 1+value * 100
+		
+		// gain only
+		StockAnalysis go = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		Map<String, List<StockRecord>> gainOnly
+			= go.filterByInfo("%Change", gainParam);
+		
+		// volume spike
+		StockAnalysis vs = new StockAnalysis(gainOnly);
+		Map<String, List<StockRecord>> volumeSpike
+			= vs.filterByVolumeSpike(volumeSpikeParam);
+		
+		// longest range
+		StockAnalysis lr = new StockAnalysis(volumeSpike);
+		Map<String, List<StockRecord>> longestRange = lr.filterByLongestRange();
+		
+		// percent close range
+		StockAnalysis cr = new StockAnalysis(longestRange);
+		Map<String, List<StockRecord>> percentRange
+			= cr.filterByPercentCloseOverRange(percentRangeParam);
+		
+		// near resistance
+		StockAnalysis nr = new StockAnalysis(percentRange);
+		Map<String, List<StockRecord>> nearResistance
+			= nr.filterByResistance1(nearResistanceParam);
+		
+		System.out.println("gain only size=" + gainOnly.size());
+		System.out.println("volume spike size=" + volumeSpike.size());
+		System.out.println("longest range size=" + longestRange.size());
+		System.out.println("percent close range size=" + percentRange.size());
+		System.out.println("near resistance size=" + nearResistance.size());
+		
+		System.out.println("Gain Only:");
+		System.out.println(JsonUtils.objectToJson(gainOnly.keySet()));
+		System.out.println("Volume Spike:");
+		System.out.println(JsonUtils.objectToJson(volumeSpike.keySet()));
+		System.out.println("Longest Range:");
+		System.out.println(JsonUtils.objectToJson(longestRange.keySet()));
+		System.out.println("Percent Range:");
+		System.out.println(JsonUtils.objectToJson(percentRange.keySet()));
+		System.out.println("Near Resistance:");
+		System.out.println(JsonUtils.objectToJson(nearResistance.keySet()));
+
+	}
+	
+	@Test
 	public void testResistanceAndVSpike() {
 		// gain only
 		StockAnalysis go = new StockAnalysis(StockLoader.loadAllStockRecord(40));
@@ -55,41 +105,6 @@ public class StockAnalysisTest {
 		
 		System.out.println("Near Resistance");
 		System.out.println(JsonUtils.objectToJson(nearResistance.keySet()));
-	}
-	
-	@Test
-	public void test3Filters() {
-		// gain only
-		StockAnalysis sa1 = new StockAnalysis(StockLoader.loadAllStockRecord(40));
-		Map<String, List<StockRecord>> gainOnly
-			= sa1.filterByInfo("%Change", new BigDecimal("1"));
-		
-		// volume spike
-		StockAnalysis sa2 = new StockAnalysis(gainOnly);
-		Map<String, List<StockRecord>> volumeSpike
-			= sa2.filterByVolumeSpike(new BigDecimal("1.25"));
-		
-		// longest range
-		StockAnalysis sa3 = new StockAnalysis(volumeSpike);
-		Map<String, List<StockRecord>> longestRange = sa3.filterByLongestRange();
-		
-		// percent close range
-		StockAnalysis sa4 = new StockAnalysis(longestRange);
-		Map<String, List<StockRecord>> percentRange
-			= sa4.filterByPercentCloseOverRange(new BigDecimal("0.75"));
-		
-		
-		System.out.println("gain only size=" + gainOnly.size());
-		System.out.println("volume spike size=" + volumeSpike.size());
-		System.out.println("longest range size=" + longestRange.size());
-		System.out.println("percent close range size=" + percentRange.size());
-		
-
-		System.out.println("Volume Spike:");
-		System.out.println(JsonUtils.objectToJson(volumeSpike.keySet()));
-		System.out.println("Percent Range:");
-		System.out.println(JsonUtils.objectToJson(percentRange.keySet()));
-
 	}
 	
 	@Test
