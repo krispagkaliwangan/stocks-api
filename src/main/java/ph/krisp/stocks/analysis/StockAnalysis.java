@@ -198,4 +198,43 @@ public class StockAnalysis {
 		return filtered;
 	}
 	
+	/**
+	 * Filters all stocks that are within threshold or greater than the
+	 * difference of the previous day Resistance 1
+	 * 
+	 * @param threshold
+	 * @return all stocks that met the resistance threshold
+	 */
+	public  Map<String, List<StockRecord>> filterByResistance1(BigDecimal threshold) {
+		long startTime = System.nanoTime();
+		Map<String, List<StockRecord>> filtered = new HashMap<>();
+		
+		// loop thru all
+		for (List<StockRecord> records : this.input.values()) {
+			
+			// if size is less than 2, ignore
+			if(records.size() < 2) {
+				continue;
+			}
+			
+			// get previous resistance 1
+			StockRecord prevRecord = records.get(records.size()-2);
+			BigDecimal prevResistance1 = (BigDecimal) prevRecord.getInfo("Resistance 1");
+			
+			// get latest last price 
+			StockRecord curRecord = records.get(records.size()-1);
+			BigDecimal lastPrice = (BigDecimal) curRecord.getInfo("Last Price");
+			
+			BigDecimal allowedPercentage = CalcUtils.calculatePercentage(prevResistance1, threshold);
+			// if latest last price >= threshold, add to filtered
+			if(lastPrice.compareTo(allowedPercentage) >= 0) {
+				filtered.put(curRecord.getCode(), records);
+			}
+		}
+		
+    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+		return filtered;
+	}
+	
 }

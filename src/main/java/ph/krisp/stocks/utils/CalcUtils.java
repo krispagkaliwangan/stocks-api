@@ -42,6 +42,21 @@ public class CalcUtils {
 	}
 	
 	/**
+	 * Returns the result of the ff formula:
+	 * 
+	 * result = amount * (1+percentage)
+	 * 
+	 * @param amount
+	 * @param percentage
+	 * @return result = amount * (1+percentage)
+	 */
+	public static BigDecimal calculatePercentage(BigDecimal amount, BigDecimal percentage) {
+		BigDecimal multiplier = BigDecimal.ONE.add(percentage);
+		
+		return amount.multiply(multiplier);
+	}
+	
+	/**
 	 * Performs linear interpolation using this formula:
 	 * 	y = y1 + (x-x1)(y2-y1)/(x2-x1)
 	 * 
