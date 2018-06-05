@@ -34,45 +34,52 @@ public class StockAnalysis {
 	private static final Logger logger = Logger.getLogger(StockAnalysis.class);
 	
 	private Map<String, List<StockRecord>> input;
+	private Map<String, List<StockRecord>> toProcess;
 
 	public StockAnalysis(Map<String, List<StockRecord>> input) {
 		this.input = input;
+		this.toProcess = input;
 		// TODO: input should only contain latest data
 	}
 	
-	public Set<String> inputKeySet() {
-		return this.input.keySet();
+	public StockAnalysis(StockAnalysis prevAnalysis) {
+		this.input = prevAnalysis.getInput();
+		this.toProcess = prevAnalysis.getOutput();
 	}
 	
-	public Collection<List<StockRecord>> values() {
-		return this.input.values();
+	public Map<String, List<StockRecord>> getInput() {
+		return this.input;
 	}
 	
-	public List<StockRecord> get(String key) {
-		return this.input.get(key);
+	public Map<String, List<StockRecord>> getOutput() {
+		return this.toProcess;
 	}
 	
-	/**
-	 * Filters the input stocks by the info and the corresponding value.
-	 * Outdated records are ignored.
-	 * 
-	 * @param info
-	 * @param value
-	 * @return the filtered set of stock codes
-	 */
-	public Map<String, List<StockRecord>> filterByInfo(String info, BigDecimal value) {
+	public Set<String> getOutputKeys() {
+		return this.toProcess.keySet();
+	}
+	
+	public int getInputSize() {
+		return this.input.size();
+	}
+	
+	public int getOutputSize() {
+		return this.toProcess.size();
+	}
+	
+	public StockAnalysis testFilter(String info, BigDecimal value) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
 		
 		// if given info key does not exist
 		if(!StockLoader.getAllKeySet().contains(info)) {
-	    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+	    	logger.info("Stock data (" + toProcess.size() + ") processed. Elapsed: "
     				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-			return filteredStocks;
+			return this;
 		}
 		
 		// loop thru all
-		for(List<StockRecord> records : this.input.values()) {
+		for(List<StockRecord> records : this.toProcess.values()) {
 			//get last record
 			StockRecord rec = records.get(records.size()-1);
 			
@@ -90,22 +97,68 @@ public class StockAnalysis {
 			}
 
 		}
-    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+    	logger.info("Stock data (" + toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-		return filteredStocks;
+    	this.toProcess = filteredStocks;
+		return this;
+	}
+	
+	/**
+	 * Filters the input stocks by the info and the corresponding value.
+	 * Outdated records are ignored.
+	 * 
+	 * @param info
+	 * @param value
+	 * @return the Stock Analysis object with filtered set of stock codes
+	 */
+	public StockAnalysis filterByInfo(String info, BigDecimal value) {
+		long startTime = System.nanoTime();
+		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
+		
+		// if given info key does not exist
+		if(!StockLoader.getAllKeySet().contains(info)) {
+	    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
+    				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+			return this;
+		}
+		
+		// loop thru all
+		for(List<StockRecord> records : this.toProcess.values()) {
+			//get last record
+			StockRecord rec = records.get(records.size()-1);
+			
+			// check if record is latest, ignore if not
+			if(rec.getDate().compareTo(StockLoader.getLatestDate()) < 0 ) {
+				continue;
+			}
+			
+			// check if key contains a number value
+			if(StockLoader.getAmountKeySet().contains(info)) {
+				BigDecimal infoValue = (BigDecimal) rec.getInfo(info);
+				if(infoValue.compareTo(value) >= 0) {
+					filteredStocks.put(rec.getCode(), records);
+				}
+			}
+
+		}
+    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
+				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+		this.toProcess = filteredStocks;
+		return this;
 	}
 	
 	/**
 	 * Filters all stocks that met the volume spike criteria
 	 * 
-	 * @return all stocks that met the volume spike criteria
+	 * @return the Analysis object with all stocks that met the volume spike
+	 *         criteria
 	 */
-	public Map<String, List<StockRecord>> filterByVolumeSpike(BigDecimal threshold) {
+	public StockAnalysis filterByVolumeSpike(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		String volume = "Volume";
 		// loop thru all
-		for(List<StockRecord> records : this.input.values()) {
+		for(List<StockRecord> records : this.toProcess.values()) {
 			// if records will result averaging to zero
 			if(records.size()-1 == 0) {
 				continue;
@@ -125,22 +178,23 @@ public class StockAnalysis {
 			}
 		}
 		
-    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-		return filtered;
+		this.toProcess = filtered;
+		return this;
 	}
 	
 	/**
 	 * Filters all stocks that meet the longest range criteria
 	 * 
-	 * @return all stocks that met the longest range criteria
+	 * @return the Analysis object with all stocks that met the longest range criteria
 	 */
-	public Map<String, List<StockRecord>> filterByLongestRange() {
+	public StockAnalysis filterByLongestRange() {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		
 		// loop thru all
-		for(List<StockRecord> records : this.input.values()) {
+		for(List<StockRecord> records : this.toProcess.values()) {
 			BigDecimal maxRange = BigDecimal.ZERO;
 			int lastIndex = records.size()-1;
 			// get range of each stockRecord and update max
@@ -158,9 +212,10 @@ public class StockAnalysis {
 			
 		}
 		
-    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-		return filtered;
+		this.toProcess = filtered;
+		return this;
 	}
 	
 	
@@ -169,14 +224,14 @@ public class StockAnalysis {
 	 * percentage of its high
 	 * 
 	 * @param threshold
-	 * @return all stocks that met this criteria
+	 * @return the Analysis object with all stocks that met this criteria
 	 */
-	public Map<String, List<StockRecord>> filterByPercentCloseOverRange(BigDecimal threshold) {
+	public StockAnalysis filterByPercentCloseOverRange(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		
 		// loop thru all
-		for (List<StockRecord> records : this.input.values()) {
+		for (List<StockRecord> records : this.toProcess.values()) {
 			StockRecord latestRecord = records.get(records.size()-1);
 			
 			BigDecimal x = (BigDecimal) latestRecord.getInfo("Last Price");
@@ -193,9 +248,10 @@ public class StockAnalysis {
 			}
 		}
 		
-    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-		return filtered;
+		this.toProcess = filtered;
+		return this;
 	}
 	
 	/**
@@ -203,14 +259,14 @@ public class StockAnalysis {
 	 * difference of the previous day Resistance 1
 	 * 
 	 * @param threshold
-	 * @return all stocks that met the resistance threshold
+	 * @return the Analysis object with all stocks that met the resistance threshold
 	 */
-	public  Map<String, List<StockRecord>> filterByResistance1(BigDecimal threshold) {
+	public StockAnalysis filterByResistance1(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		
 		// loop thru all
-		for (List<StockRecord> records : this.input.values()) {
+		for (List<StockRecord> records : this.toProcess.values()) {
 			
 			// if size is less than 2, ignore
 			if(records.size() < 2) {
@@ -232,9 +288,10 @@ public class StockAnalysis {
 			}
 		}
 		
-    	logger.info("Stock data (" + input.size() + ") processed. Elapsed: "
+    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-		return filtered;
+    	this.toProcess = filtered;
+    	return this;
 	}
 	
 }
