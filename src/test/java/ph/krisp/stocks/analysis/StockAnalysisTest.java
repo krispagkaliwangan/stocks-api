@@ -22,6 +22,45 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void testRefactoredAllFilters() {
+		// set analysis parameters
+		BigDecimal gainParam = new BigDecimal("3"); // in percent
+		BigDecimal volumeSpikeParam = new BigDecimal("1.25"); // value * 100
+		BigDecimal percentRangeParam = new BigDecimal("0.75"); // value * 100
+		BigDecimal nearResistanceParam = new BigDecimal("-0.0005"); // 1+value * 100
+		
+		// loads 2 months of data
+		StockAnalysis analysis = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		
+		analysis
+				.filterByInfo("%Change", gainParam)
+				.filterByVolumeSpike(volumeSpikeParam)
+				.filterByLongestRange()
+				.filterByPercentCloseOverRange(percentRangeParam)
+				.filterByResistance1(nearResistanceParam)
+				.getOutput();
+		
+		System.out.println("output size=" + analysis.getOutputSize());
+		System.out.println(JsonUtils.objectToJson(analysis.getOutputKeys()));
+	}
+	
+	@Test
+	public void testProcessor() {
+		BigDecimal param1 = new BigDecimal("1"); // in percent
+		BigDecimal param2 = new BigDecimal("3"); // in percent
+		BigDecimal param3 = new BigDecimal("5"); // in percent
+		StockAnalysis analysis = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		
+		Map<String, List<StockRecord>> processed = analysis
+														.testFilter("%Change", param1)
+														.testFilter("%Change", param2)
+														.testFilter("%Change", param3)
+														.getOutput();
+
+		System.out.println("gain only size=" + processed.size());
+	}
+	
+	@Test
 	public void testAllFilters() {
 		BigDecimal gainParam = new BigDecimal("3"); // in percent
 		BigDecimal volumeSpikeParam = new BigDecimal("1.25"); // value * 100
@@ -30,44 +69,43 @@ public class StockAnalysisTest {
 		
 		// gain only
 		StockAnalysis go = new StockAnalysis(StockLoader.loadAllStockRecord(40));
-		Map<String, List<StockRecord>> gainOnly
-			= go.filterByInfo("%Change", gainParam);
+		StockAnalysis gainOnly = go.filterByInfo("%Change", gainParam);
 		
 		// volume spike
 		StockAnalysis vs = new StockAnalysis(gainOnly);
-		Map<String, List<StockRecord>> volumeSpike
+		StockAnalysis volumeSpike
 			= vs.filterByVolumeSpike(volumeSpikeParam);
 		
 		// longest range
 		StockAnalysis lr = new StockAnalysis(volumeSpike);
-		Map<String, List<StockRecord>> longestRange = lr.filterByLongestRange();
+		StockAnalysis longestRange = lr.filterByLongestRange();
 		
 		// percent close range
 		StockAnalysis cr = new StockAnalysis(longestRange);
-		Map<String, List<StockRecord>> percentRange
+		StockAnalysis percentRange
 			= cr.filterByPercentCloseOverRange(percentRangeParam);
 		
 		// near resistance
 		StockAnalysis nr = new StockAnalysis(percentRange);
-		Map<String, List<StockRecord>> nearResistance
+		StockAnalysis nearResistance
 			= nr.filterByResistance1(nearResistanceParam);
 		
-		System.out.println("gain only size=" + gainOnly.size());
-		System.out.println("volume spike size=" + volumeSpike.size());
-		System.out.println("longest range size=" + longestRange.size());
-		System.out.println("percent close range size=" + percentRange.size());
-		System.out.println("near resistance size=" + nearResistance.size());
+		System.out.println("gain only size=" + gainOnly.getOutputSize());
+		System.out.println("volume spike size=" + volumeSpike.getOutputSize());
+		System.out.println("longest range size=" + longestRange.getOutputSize());
+		System.out.println("percent close range size=" + percentRange.getOutputSize());
+		System.out.println("near resistance size=" + nearResistance.getOutputSize());
 		
 		System.out.println("Gain Only:");
-		System.out.println(JsonUtils.objectToJson(gainOnly.keySet()));
+		System.out.println(JsonUtils.objectToJson(gainOnly.getOutputKeys()));
 		System.out.println("Volume Spike:");
-		System.out.println(JsonUtils.objectToJson(volumeSpike.keySet()));
+		System.out.println(JsonUtils.objectToJson(volumeSpike.getOutputKeys()));
 		System.out.println("Longest Range:");
-		System.out.println(JsonUtils.objectToJson(longestRange.keySet()));
+		System.out.println(JsonUtils.objectToJson(longestRange.getOutputKeys()));
 		System.out.println("Percent Range:");
-		System.out.println(JsonUtils.objectToJson(percentRange.keySet()));
+		System.out.println(JsonUtils.objectToJson(percentRange.getOutputKeys()));
 		System.out.println("Near Resistance:");
-		System.out.println(JsonUtils.objectToJson(nearResistance.keySet()));
+		System.out.println(JsonUtils.objectToJson(nearResistance.getOutputKeys()));
 
 	}
 	
@@ -75,47 +113,47 @@ public class StockAnalysisTest {
 	public void testResistanceAndVSpike() {
 		// gain only
 		StockAnalysis go = new StockAnalysis(StockLoader.loadAllStockRecord(40));
-		Map<String, List<StockRecord>> gainOnly
+		StockAnalysis gainOnly
 			= go.filterByInfo("%Change", new BigDecimal("0.005"));
 		
 		// volume spike
 		StockAnalysis vs = new StockAnalysis(gainOnly);
-		Map<String, List<StockRecord>> volumeSpike
+		StockAnalysis volumeSpike
 			= vs.filterByVolumeSpike(new BigDecimal("1.25"));
 		
 		// near resistance
 		StockAnalysis nr = new StockAnalysis(volumeSpike);
-		Map<String, List<StockRecord>> nearResistance
+		StockAnalysis nearResistance
 			= nr.filterByResistance1(new BigDecimal("-0.0005"));
 		
-		System.out.println("volume spike size=" + volumeSpike.size());
-		System.out.println("near resistance size=" + nearResistance.size());
+		System.out.println("volume spike size=" + volumeSpike.getOutputSize());
+		System.out.println("near resistance size=" + nearResistance.getOutputSize());
 		
 		System.out.println("Volume Spike:");
-		System.out.println(JsonUtils.objectToJson(volumeSpike.keySet()));
+		System.out.println(JsonUtils.objectToJson(volumeSpike.getOutputKeys()));
 		System.out.println("Near Resistance");
-		System.out.println(JsonUtils.objectToJson(nearResistance.keySet()));
+		System.out.println(JsonUtils.objectToJson(nearResistance.getOutputKeys()));
 	}
 	
 	@Test
 	public void testResistance1() {
 		StockAnalysis sa = new StockAnalysis(StockLoader.loadAllStockRecord(40));
-		Map<String, List<StockRecord>> nearResistance
+		StockAnalysis nearResistance
 			= sa.filterByResistance1(new BigDecimal("-0.005"));
 		
 		System.out.println("Near Resistance");
-		System.out.println(JsonUtils.objectToJson(nearResistance.keySet()));
+		System.out.println(JsonUtils.objectToJson(nearResistance.getOutputKeys()));
 	}
 	
 	@Test
 	public void testFilterByPercentCloseOverRange() {
 		StockAnalysis sa = new StockAnalysis(StockLoader.loadAllStockRecord(40));
 		
-		Map<String, List<StockRecord>> result
+		StockAnalysis result
 			= sa.filterByPercentCloseOverRange(new BigDecimal("0.9"));
 		
-		System.out.println("size=" + result.size());
-		System.out.println(JsonUtils.objectToJson(result.keySet()));
+		System.out.println("size=" + result.getOutputSize());
+		System.out.println(JsonUtils.objectToJson(result.getOutputKeys()));
 	}
 	
 	@Test
@@ -129,37 +167,37 @@ public class StockAnalysisTest {
 		
 		// start analysis
 		StockAnalysis sa = new StockAnalysis(input);
-		Map<String, List<StockRecord>> longestRange
+		StockAnalysis longestRange
 			= sa.filterByPercentCloseOverRange(new BigDecimal("0.5"));
 		
-		System.out.println("longest range size=" + longestRange.size());
-		System.out.println(JsonUtils.objectToJson(longestRange.keySet()));
+		System.out.println("longest range size=" + longestRange.getOutputSize());
+		System.out.println(JsonUtils.objectToJson(longestRange.getOutputKeys()));
 	}
 	
 	@Test
 	public void testVolumeSpikeAndLongestRange() {
 		// gain only
 		StockAnalysis sa1 = new StockAnalysis(StockLoader.loadAllStockRecord(40));
-		Map<String, List<StockRecord>> gainOnly
+		StockAnalysis gainOnly
 			= sa1.filterByInfo("%Change", new BigDecimal("3"));
 		
 		// volume spike
 		StockAnalysis sa2 = new StockAnalysis(gainOnly);
-		Map<String, List<StockRecord>> volumeSpike
+		StockAnalysis volumeSpike
 			= sa2.filterByVolumeSpike(new BigDecimal("1.25"));
 		
 		// longest range
 		StockAnalysis sa3 = new StockAnalysis(volumeSpike);
-		Map<String, List<StockRecord>> longestRange = sa3.filterByLongestRange();
+		StockAnalysis longestRange = sa3.filterByLongestRange();
 		
 		
 		
 		// print
-		System.out.println("gain only size=" + gainOnly.size());
-		System.out.println("volume spike size=" + volumeSpike.size());
-		System.out.println("longest range size=" + longestRange.size());
+		System.out.println("gain only size=" + gainOnly.getOutputSize());
+		System.out.println("volume spike size=" + volumeSpike.getOutputSize());
+		System.out.println("longest range size=" + longestRange.getOutputSize());
 		
-		System.out.println(JsonUtils.objectToJson(longestRange.keySet()));
+		System.out.println(JsonUtils.objectToJson(longestRange.getOutputKeys()));
 	}
 	
 	@Test
@@ -167,12 +205,12 @@ public class StockAnalysisTest {
 		StockAnalysis longestRange
 			= new StockAnalysis(StockLoader.loadAllStockRecord(10));
 		
-		Map<String, List<StockRecord>> filtered
+		StockAnalysis filtered
 			= longestRange.filterByLongestRange();
 
 		
-		System.out.println(JsonUtils.objectToJson(filtered.keySet()));
-		System.out.println("size=" + filtered.size());
+		System.out.println(JsonUtils.objectToJson(filtered.getOutputKeys()));
+		System.out.println("size=" + filtered.getOutputSize());
 	}
 	
 	
@@ -181,21 +219,21 @@ public class StockAnalysisTest {
 		StockAnalysis volumeSpike
 			= new StockAnalysis(StockLoader.loadAllStockRecord(40));
 		
-		Map<String, List<StockRecord>> filtered
+		StockAnalysis filtered
 			= volumeSpike.filterByVolumeSpike(new BigDecimal("1.5"));
 
-		System.out.println(JsonUtils.objectToJson(filtered.keySet()));
-		System.out.println("size=" + filtered.size());
+		System.out.println(JsonUtils.objectToJson(filtered.getOutputKeys()));
+		System.out.println("size=" + filtered.getOutputSize());
 	}
 	
 	@Test
 	public void test() {
 		StockAnalysis stockAnalysis = new StockAnalysis(StockLoader.loadAllStockRecord(1));
-		Map<String, List<StockRecord>> filteredStocks
+		StockAnalysis filteredStocks
 			= stockAnalysis.filterByInfo("%Change", new BigDecimal("10"));
 		
 		System.out.println(JsonUtils.objectToJson(filteredStocks));
-		System.out.println(JsonUtils.objectToJson(filteredStocks.keySet()));
+		System.out.println(JsonUtils.objectToJson(filteredStocks.getOutputKeys()));
 		
 	}
 
