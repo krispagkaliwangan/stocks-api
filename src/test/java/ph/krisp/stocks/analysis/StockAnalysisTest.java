@@ -22,11 +22,12 @@ public class StockAnalysisTest {
 	}
 
 	@Test
-	public void testRefactoredAllFilters() {
+	public void testExperiment() {
 		// set analysis parameters
-		BigDecimal gainParam = new BigDecimal("3"); // in percent
-		BigDecimal volumeSpikeParam = new BigDecimal("1.25"); // value * 100
+		BigDecimal gainParam = new BigDecimal("1"); // in percent
+		BigDecimal volumeSpikeParam = new BigDecimal("1"); // value * 100
 		BigDecimal percentRangeParam = new BigDecimal("0.75"); // value * 100
+		BigDecimal longestRangeParam = new BigDecimal("1"); // value * 10
 		BigDecimal nearResistanceParam = new BigDecimal("-0.0005"); // 1+value * 100
 		
 		// loads 2 months of data
@@ -35,7 +36,31 @@ public class StockAnalysisTest {
 		analysis
 				.filterByInfo("%Change", gainParam)
 				.filterByVolumeSpike(volumeSpikeParam)
-				.filterByLongestRange()
+				.filterByLongestRange(longestRangeParam)
+				.filterByPercentCloseOverRange(percentRangeParam)
+				.filterByResistance1(nearResistanceParam)
+				.getOutput();
+		
+		System.out.println("output size=" + analysis.getOutputSize());
+		System.out.println(JsonUtils.objectToJson(analysis.getOutputKeys()));
+	}
+	
+	@Test
+	public void testRefactoredAllFilters() {
+		// set analysis parameters
+		BigDecimal gainParam = new BigDecimal("1.5"); // in percent
+		BigDecimal volumeSpikeParam = new BigDecimal("1.25"); // value * 100
+		BigDecimal percentRangeParam = new BigDecimal("0.75"); // value * 100
+		BigDecimal longestRangeParam = new BigDecimal("1"); // value * 100
+		BigDecimal nearResistanceParam = new BigDecimal("-0.0005"); // 1+value * 100
+		
+		// loads 2 months of data
+		StockAnalysis analysis = new StockAnalysis(StockLoader.loadAllStockRecord(40));
+		
+		analysis
+				.filterByInfo("%Change", gainParam)
+				.filterByVolumeSpike(volumeSpikeParam)
+				.filterByLongestRange(longestRangeParam)
 				.filterByPercentCloseOverRange(percentRangeParam)
 				.filterByResistance1(nearResistanceParam)
 				.getOutput();
