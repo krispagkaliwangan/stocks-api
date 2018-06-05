@@ -185,11 +185,21 @@ public class StockAnalysis {
 	}
 	
 	/**
-	 * Filters all stocks that meet the longest range criteria
-	 * 
+	 * Convenient method for filtering the longest range
 	 * @return the Analysis object with all stocks that met the longest range criteria
 	 */
 	public StockAnalysis filterByLongestRange() {
+		return filterByLongestRange(BigDecimal.ONE);
+	}
+	
+	/**
+	 * Filters all stocks that have its latest range within the threshold 
+	 * of the maximum range
+	 * 
+	 * @param threshold 1 for the longest
+	 * @return the Analysis object with all stocks that met the longest range criteria
+	 */
+	public StockAnalysis filterByLongestRange(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		
@@ -205,8 +215,16 @@ public class StockAnalysis {
 				}
 			}
 			// check if range of latest is the maximum
-			if(records.get(lastIndex).getRange().compareTo(maxRange) > 0) {
-				// add if it is
+//			if(records.get(lastIndex).getRange().compareTo(maxRange) > 0) {
+//				// add if it is
+//				filtered.put(records.get(0).getCode(), records);
+//			}
+			
+			// check if range of latest is within the percentage
+			// threshold of maximum
+			BigDecimal percentage = records.get(lastIndex).getRange()
+					.divide(maxRange, 5, RoundingMode.HALF_UP);
+			if(percentage.compareTo(threshold) >= 0) {
 				filtered.put(records.get(0).getCode(), records);
 			}
 			
