@@ -23,7 +23,7 @@ public class CalcUtilsTest {
 
 	@Test
 	public void testCalculateAverage() {
-		List<StockRecord> records = StockLoader.loadStockRecord("JFC", 40);
+		List<StockRecord> records = StockLoader.loadSingleStockRecord("JFC", 40);
 		assertTrue(CalcUtils.calculateAverage(records, "Volume").compareTo(BigDecimal.ONE) > 0);
 	
 		assertTrue(CalcUtils.calculateAverage(records, "test").compareTo(BigDecimal.ZERO) == 0);

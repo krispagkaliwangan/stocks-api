@@ -2,6 +2,7 @@ package ph.krisp.stocks.analysis;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,14 +19,6 @@ import ph.krisp.stocks.utils.CalcUtils;
 /**
  * Performs analysis against the stock records
  * 
- * TODO: convert to a processor class
- * TODO: create a new StockAnalysis class as model
- * 
- * -input
- * -output
- * -result
- * -analysis made
- * 
  * @author kris.pagkaliwangan
  *
  */
@@ -39,7 +32,6 @@ public class StockAnalysis {
 	public StockAnalysis(Map<String, List<StockRecord>> input) {
 		this.input = input;
 		this.toProcess = input;
-		// TODO: input should only contain latest data
 	}
 	
 	public StockAnalysis(StockAnalysis prevAnalysis) {
@@ -67,41 +59,64 @@ public class StockAnalysis {
 		return this.toProcess.size();
 	}
 	
-	public StockAnalysis testFilter(String info, BigDecimal value) {
+	/**
+	 * Filters the input records of this analysis with the given range.
+	 * E.g. startDepth = 10, endDepth = 1, with size = 40
+	 * the records to be returned are:
+	 * 
+	 * end = (40-1)-1 = 38
+	 * start = (40-1)-10 = 29
+	 * 
+	 * meaning, elements 29 to 38 will be saved in the toProcess variable
+	 * 
+	 * @param startDepth
+	 * @param endDepth
+	 * @return the analysis object with the filtered records
+	 */
+	public StockAnalysis filterByDepth(int startDepth, int endDepth) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
 		
-		// if given info key does not exist
-		if(!StockLoader.getAllKeySet().contains(info)) {
-	    	logger.info("Stock data (" + toProcess.size() + ") processed. Elapsed: "
+		// check if range is invalid
+		if(this.toProcess.size() == 0 || startDepth < endDepth
+				|| startDepth < 0 || endDepth < 0) {
+	    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
     				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
 			return this;
 		}
-		
+
 		// loop thru all
-		for(List<StockRecord> records : this.toProcess.values()) {
-			//get last record
-			StockRecord rec = records.get(records.size()-1);
-			
-			// check if record is latest, ignore if not
-			if(rec.getDate().compareTo(StockLoader.getLatestDate()) < 0 ) {
+		for (List<StockRecord> records : this.toProcess.values()) {
+			// ignore this record if empty
+			if(records.size() == 0) {
 				continue;
 			}
+			// get indices for records
+			int startIndex = records.size()-startDepth;
+			int endIndex = records.size()-endDepth;
 			
-			// check if key contains a number value
-			if(StockLoader.getAmountKeySet().contains(info)) {
-				BigDecimal infoValue = (BigDecimal) rec.getInfo(info);
-				if(infoValue.compareTo(value) >= 0) {
-					filteredStocks.put(rec.getCode(), records);
-				}
+			// start index should not greater than record size
+			if(startIndex < 0) {
+				startIndex = 0;
 			}
-
+			// end index should nto be greater than record size
+			if(endIndex < 0) {
+				endIndex = 0;
+			}
+			// get records
+			List<StockRecord> filteredRecords = new ArrayList<>();
+			for (int i = startIndex; i < endIndex; i++) {
+				filteredRecords.add(records.get(i));
+			}
+			filteredStocks.put(records.get(0).getCode(), filteredRecords);
 		}
-    	logger.info("Stock data (" + toProcess.size() + ") processed. Elapsed: "
+		
+    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-    	this.toProcess = filteredStocks;
+		this.toProcess = filteredStocks;
 		return this;
 	}
+	
 	
 	/**
 	 * Filters the input stocks by the info and the corresponding value.
