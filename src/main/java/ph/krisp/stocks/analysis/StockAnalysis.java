@@ -18,14 +18,6 @@ import ph.krisp.stocks.utils.CalcUtils;
 /**
  * Performs analysis against the stock records
  * 
- * TODO: convert to a processor class
- * TODO: create a new StockAnalysis class as model
- * 
- * -input
- * -output
- * -result
- * -analysis made
- * 
  * @author kris.pagkaliwangan
  *
  */
@@ -39,7 +31,6 @@ public class StockAnalysis {
 	public StockAnalysis(Map<String, List<StockRecord>> input) {
 		this.input = input;
 		this.toProcess = input;
-		// TODO: input should only contain latest data
 	}
 	
 	public StockAnalysis(StockAnalysis prevAnalysis) {
@@ -65,6 +56,38 @@ public class StockAnalysis {
 	
 	public int getOutputSize() {
 		return this.toProcess.size();
+	}
+	
+	/**
+	 * Filters the input records of this analysis with the given range.
+	 * E.g. startDepth = 10, endDepth = 1, with size = 40
+	 * the records to be returned are:
+	 * 
+	 * end = (40-1)-1 = 38
+	 * start = (40-1)-10 = 29
+	 * 
+	 * meaning, elements 29 to 38 will be saved in the toProcess variable
+	 * 
+	 * @param startDepth
+	 * @param endDepth
+	 * @return the analysis object with the filtered records
+	 */
+	public StockAnalysis filterByDepth(int startDepth, int endDepth) {
+		long startTime = System.nanoTime();
+		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
+		
+		// check if range is invalid
+		if(this.toProcess.size() == 0 || startDepth > endDepth) {
+	    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
+    				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+			return this;
+		}
+
+		
+    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
+				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
+		this.toProcess = filteredStocks;
+		return this;
 	}
 	
 	
