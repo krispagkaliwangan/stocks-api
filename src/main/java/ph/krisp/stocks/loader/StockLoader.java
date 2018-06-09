@@ -111,9 +111,7 @@ public class StockLoader {
 		}
 		
 		// update the latest date
-		if(stockRecords.size() > 0) {
-			updateLatest(stockRecords.get(stockRecords.size()-1).getDate());
-		}
+		updateLatestDate(stockRecords);
 		
 		return stockRecords;
 	}
@@ -146,17 +144,24 @@ public class StockLoader {
 	}
 	
 	/**
-	 * Update the latest date
+	 * Update the latest date based from the stockRecord contents
 	 * 
-	 * @param date
+	 * @param stockRecords stockRecords
 	 */
-	private static void updateLatest(Date date) {
-		if(latestHelper.containsKey(date)) {
-			latestHelper.put(date, latestHelper.get(date)+1);
-		} else {
-			latestHelper.put(date, 1);
+	private static void updateLatestDate(List<StockRecord> stockRecords) {
+		
+		// do not update if stockRecords is empty
+		if(stockRecords.size() == 0) {
+			return;
 		}
-		if(latest == null) {
+		
+		Date date = stockRecords.get(stockRecords.size()-1).getDate();
+		if(getLatestHelper().containsKey(date)) {
+			getLatestHelper().put(date, getLatestHelper().get(date)+1);
+		} else {
+			getLatestHelper().put(date, 1);
+		}
+		if(getLatestDate() == null) {
 			latest = date;
 		}
 		if(getLatestDate().compareTo(date) < 0) {
