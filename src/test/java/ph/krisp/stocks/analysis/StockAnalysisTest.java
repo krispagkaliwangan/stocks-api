@@ -70,22 +70,6 @@ public class StockAnalysisTest {
 	}
 	
 	@Test
-	public void testProcessor() {
-		BigDecimal param1 = new BigDecimal("1"); // in percent
-		BigDecimal param2 = new BigDecimal("3"); // in percent
-		BigDecimal param3 = new BigDecimal("5"); // in percent
-		StockAnalysis analysis = new StockAnalysis(StockLoader.loadAllStockRecord(40));
-		
-		Map<String, List<StockRecord>> processed = analysis
-														.testFilter("%Change", param1)
-														.testFilter("%Change", param2)
-														.testFilter("%Change", param3)
-														.getOutput();
-
-		System.out.println("gain only size=" + processed.size());
-	}
-	
-	@Test
 	public void testAllFilters() {
 		BigDecimal gainParam = new BigDecimal("3"); // in percent
 		BigDecimal volumeSpikeParam = new BigDecimal("1.25"); // value * 100

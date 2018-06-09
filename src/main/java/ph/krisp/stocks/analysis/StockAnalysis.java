@@ -67,41 +67,6 @@ public class StockAnalysis {
 		return this.toProcess.size();
 	}
 	
-	public StockAnalysis testFilter(String info, BigDecimal value) {
-		long startTime = System.nanoTime();
-		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
-		
-		// if given info key does not exist
-		if(!StockLoader.getAllKeySet().contains(info)) {
-	    	logger.info("Stock data (" + toProcess.size() + ") processed. Elapsed: "
-    				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-			return this;
-		}
-		
-		// loop thru all
-		for(List<StockRecord> records : this.toProcess.values()) {
-			//get last record
-			StockRecord rec = records.get(records.size()-1);
-			
-			// check if record is latest, ignore if not
-			if(rec.getDate().compareTo(StockLoader.getLatestDate()) < 0 ) {
-				continue;
-			}
-			
-			// check if key contains a number value
-			if(StockLoader.getAmountKeySet().contains(info)) {
-				BigDecimal infoValue = (BigDecimal) rec.getInfo(info);
-				if(infoValue.compareTo(value) >= 0) {
-					filteredStocks.put(rec.getCode(), records);
-				}
-			}
-
-		}
-    	logger.info("Stock data (" + toProcess.size() + ") processed. Elapsed: "
-				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
-    	this.toProcess = filteredStocks;
-		return this;
-	}
 	
 	/**
 	 * Filters the input stocks by the info and the corresponding value.
