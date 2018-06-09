@@ -125,26 +125,6 @@ public class StockLoader {
 	}
 	
 	/**
-	 * Loads all stock records found in the String[] argument with the given
-	 * depth
-	 * 
-	 * @param stockCodes
-	 *            the set of StockCodes
-	 * @param depth
-	 *            the number of records to be loaded per stock record
-	 * @return all stock records in the String[] argument
-	 */
-	public static Map<String, List<StockRecord>> loadStockRecords(Set<String> stockCodes, int depth) {
-		Map<String, List<StockRecord>> stockRecords = new HashMap<>();
-		
-		for(String stockCode : stockCodes) {
-			stockRecords.put(stockCode, StockLoader.loadSingleStockRecord(stockCode, depth));
-		}
-
-		return stockRecords;
-	}
-	
-	/**
 	 * Loads the stock records from the storage file. Parses the csv file for
 	 * the stock raw information. Converts each stock raw object to a stock
 	 * record object. The number of records loaded is determined by depth.

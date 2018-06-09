@@ -2,6 +2,7 @@ package ph.krisp.stocks.analysis;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,12 +78,38 @@ public class StockAnalysis {
 		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
 		
 		// check if range is invalid
-		if(this.toProcess.size() == 0 || startDepth > endDepth) {
+		if(this.toProcess.size() == 0 || startDepth < endDepth
+				|| startDepth < 0 || endDepth < 0) {
 	    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
     				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
 			return this;
 		}
 
+		// loop thru all
+		for (List<StockRecord> records : this.toProcess.values()) {
+			// ignore this record if empty
+			if(records.size() == 0) {
+				continue;
+			}
+			// get indices for records
+			int startIndex = records.size()-startDepth;
+			int endIndex = records.size()-endDepth;
+			
+			// start index should not greater than record size
+			if(startIndex < 0) {
+				startIndex = 0;
+			}
+			// end index should nto be greater than record size
+			if(endIndex < 0) {
+				endIndex = 0;
+			}
+			// get records
+			List<StockRecord> filteredRecords = new ArrayList<>();
+			for (int i = startIndex; i < endIndex; i++) {
+				filteredRecords.add(records.get(i));
+			}
+			filteredStocks.put(records.get(0).getCode(), filteredRecords);
+		}
 		
     	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");

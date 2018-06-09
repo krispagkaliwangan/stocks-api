@@ -22,6 +22,18 @@ public class StockAnalysisTest {
 	}
 
 	@Test
+	public void testExtractRange() {
+		String[] stockCodes = {"NOW"};
+		StockAnalysis analysis = new StockAnalysis(StockLoader.loadStockRecords(stockCodes, 40));
+		
+		analysis.filterByDepth(15, 5);
+		
+		assertEquals(10, analysis.getOutput().get("NOW").size());
+		
+		System.out.println(JsonUtils.objectToJson(analysis.getOutput().get("NOW")));
+	}
+	
+	@Test
 	public void testExperiment() {
 		// set analysis parameters
 		BigDecimal gainParam = new BigDecimal("1"); // in percent
@@ -170,7 +182,7 @@ public class StockAnalysisTest {
 		// load single stock
 
 		String key = "IDC";
-		List<StockRecord> value = StockLoader.loadStockRecord(key, 40);
+		List<StockRecord> value = StockLoader.loadSingleStockRecord(key, 40);
 		Map<String, List<StockRecord>> input = new HashMap<>();
 		input.put(key, value);
 		
