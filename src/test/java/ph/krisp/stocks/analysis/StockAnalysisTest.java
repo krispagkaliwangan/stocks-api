@@ -3,6 +3,7 @@ package ph.krisp.stocks.analysis;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ph.krisp.stocks.loader.StockLoader;
+import ph.krisp.stocks.model.StockPrediction;
 import ph.krisp.stocks.model.StockRecord;
 import ph.krisp.stocks.utils.JsonUtils;
 
@@ -21,6 +23,46 @@ public class StockAnalysisTest {
 	public void setUp() throws Exception {
 	}
 
+	@Test
+	public void testWalking() {
+		String[] stockCodes = {"NOW"};
+		// start analysis from 2 months of data (40=5days in 8 weeks)
+		int depth = 40;
+		StockAnalysis analysis = new StockAnalysis(StockLoader.loadStockRecords(stockCodes, depth));
+
+		List<StockPrediction> predictions = new ArrayList<>();
+		for (int i = 1; i < depth; i++) {
+			// filter
+			StockAnalysis sa = new StockAnalysis(analysis);
+			sa.filterByDepth(depth, depth - i);
+			List<StockRecord> records = sa.getOutput().get("NOW");
+			
+			// create new prediction
+			if(!records.isEmpty()) {
+				StockRecord latest = records.get(records.size()-1);
+				String action = "U";
+				StockPrediction prediction = new StockPrediction(latest.getCode(), latest.getDate(), action);
+				predictions.add(prediction);
+				
+				// update prev prediction
+				int prevIndex = predictions.size()-1;
+				if(predictions.get(prevIndex) != null) {
+					StockPrediction prevPrediction = predictions.get(prevIndex);
+					BigDecimal change = (BigDecimal) latest.getInfo("%Change");
+					String nextDay = change.compareTo(BigDecimal.ZERO) >= 0 ? "U" : "D";
+					prevPrediction.setNextDay(nextDay);
+				}
+			}
+			
+		}
+		
+		for(StockPrediction prediction : predictions) {
+			System.out.println(prediction.getDate() + " : " + prediction.getAction()
+					+ " : " + prediction.getNextDay() + " : " + prediction.isMatch());
+		}
+		
+	}
+	
 	@Test
 	public void testExtractRange() {
 		String[] stockCodes = {"NOW"};

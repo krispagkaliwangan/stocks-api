@@ -111,7 +111,8 @@ public class StockAnalysis {
 			filteredStocks.put(records.get(0).getCode(), filteredRecords);
 		}
 		
-    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
+    	logger.info("Filter by depth complete. "
+    			+ "Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
 		this.toProcess = filteredStocks;
 		return this;
