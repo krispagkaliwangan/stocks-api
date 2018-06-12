@@ -97,7 +97,7 @@ public class StockLoader {
 	 * @return the Map of key-value pairs representing stockCode and its
 	 *         corresponding StockRecord with the given depth
 	 */
-	public static Map<String, List<StockRecord>> loadAllStockRecord(int depth) {
+	public static Map<String, List<StockRecord>> loadStockRecords(int depth) {
 		return loadStockRecords(StockLoader.getStockKeySet().toArray(
 				new String[StockLoader.stockKeySize()]), depth);
 	}
@@ -114,11 +114,14 @@ public class StockLoader {
 	 */
 	public static Map<String, List<StockRecord>> loadStockRecords(String[] stockCodes, int depth) {
 		long startTime = System.nanoTime();
+		logger.info("Loading data (" + stockCodes.length + ") with " + depth + " depth.");
+		
 		Map<String, List<StockRecord>> stockRecords = new HashMap<>();
 		latestHelper.clear();
 		for(String stockCode : stockCodes) {
 			stockRecords.put(stockCode, StockLoader.loadSingleStockRecord(stockCode, depth));
 		}
+		
     	logger.info("Stock data (" + stockRecords.size()
 			+ ") loaded. Elapsed: " + (System.nanoTime()-startTime)/1000000.00 + "ms");
 		return stockRecords;

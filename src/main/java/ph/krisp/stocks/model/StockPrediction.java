@@ -42,8 +42,7 @@ public class StockPrediction {
 		this.code = code;
 		this.date = date;
 		this.action = action;
-		this.nextDay = nextDay;
-		this.isMatch = action.equals(nextDay);
+		this.setNextDay(nextDay);
 	}
 
 	public String getCode() {
@@ -64,6 +63,11 @@ public class StockPrediction {
 
 	public boolean isMatch() {
 		return isMatch;
+	}
+
+	public void setNextDay(String nextDay) {
+		this.nextDay = nextDay;
+		this.isMatch = action.equals(nextDay);
 	}
 	
 	

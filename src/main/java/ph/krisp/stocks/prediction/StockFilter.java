@@ -1,4 +1,4 @@
-package ph.krisp.stocks.analysis;
+package ph.krisp.stocks.prediction;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -22,23 +22,50 @@ import ph.krisp.stocks.utils.CalcUtils;
  * @author kris.pagkaliwangan
  *
  */
-public class StockAnalysis {
+public class StockFilter {
 
-	private static final Logger logger = Logger.getLogger(StockAnalysis.class);
+	private static final Logger logger = Logger.getLogger(StockFilter.class);
 	
+	private int depth;
 	private Map<String, List<StockRecord>> input;
 	private Map<String, List<StockRecord>> toProcess;
 
-	public StockAnalysis(Map<String, List<StockRecord>> input) {
+	/**
+	 * Constructor to load all available stock codes at the given depth
+	 * 
+	 * @param depth
+	 */
+	public StockFilter(int depth) {
+		this.depth = depth;
+		this.input = StockLoader.loadStockRecords(depth);
+		this.toProcess = this.input;
+	}
+	
+	/**
+	 * Constructor to load the given stock codes at the given depth
+	 * 
+	 * @param depth
+	 */
+	public StockFilter(String[] stockCodes, int depth) {
+		this.depth = depth;
+		this.input = StockLoader.loadStockRecords(stockCodes, depth);
+		this.toProcess = this.input;
+	}
+	
+	public StockFilter(Map<String, List<StockRecord>> input) {
 		this.input = input;
 		this.toProcess = input;
 	}
 	
-	public StockAnalysis(StockAnalysis prevAnalysis) {
+	public StockFilter(StockFilter prevAnalysis) {
 		this.input = prevAnalysis.getInput();
 		this.toProcess = prevAnalysis.getOutput();
 	}
 	
+	public int getDepth() {
+		return depth;
+	}
+
 	public Map<String, List<StockRecord>> getInput() {
 		return this.input;
 	}
@@ -73,7 +100,7 @@ public class StockAnalysis {
 	 * @param endDepth
 	 * @return the analysis object with the filtered records
 	 */
-	public StockAnalysis filterByDepth(int startDepth, int endDepth) {
+	public StockFilter filterByDepth(int startDepth, int endDepth) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
 		
@@ -111,7 +138,8 @@ public class StockAnalysis {
 			filteredStocks.put(records.get(0).getCode(), filteredRecords);
 		}
 		
-    	logger.info("Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
+    	logger.info("Filter by depth complete. "
+    			+ "Stock data (" + this.toProcess.size() + ") processed. Elapsed: "
 				+ (System.nanoTime()-startTime)/1000000.00 + "ms");
 		this.toProcess = filteredStocks;
 		return this;
@@ -126,7 +154,7 @@ public class StockAnalysis {
 	 * @param value
 	 * @return the Stock Analysis object with filtered set of stock codes
 	 */
-	public StockAnalysis filterByInfo(String info, BigDecimal value) {
+	public StockFilter filterByInfo(String info, BigDecimal value) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filteredStocks = new HashMap<>();
 		
@@ -168,7 +196,7 @@ public class StockAnalysis {
 	 * @return the Analysis object with all stocks that met the volume spike
 	 *         criteria
 	 */
-	public StockAnalysis filterByVolumeSpike(BigDecimal threshold) {
+	public StockFilter filterByVolumeSpike(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		String volume = "Volume";
@@ -203,7 +231,7 @@ public class StockAnalysis {
 	 * Convenient method for filtering the longest range
 	 * @return the Analysis object with all stocks that met the longest range criteria
 	 */
-	public StockAnalysis filterByLongestRange() {
+	public StockFilter filterByLongestRange() {
 		return filterByLongestRange(BigDecimal.ONE);
 	}
 	
@@ -214,7 +242,7 @@ public class StockAnalysis {
 	 * @param threshold 1 for the longest
 	 * @return the Analysis object with all stocks that met the longest range criteria
 	 */
-	public StockAnalysis filterByLongestRange(BigDecimal threshold) {
+	public StockFilter filterByLongestRange(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		
@@ -259,7 +287,7 @@ public class StockAnalysis {
 	 * @param threshold
 	 * @return the Analysis object with all stocks that met this criteria
 	 */
-	public StockAnalysis filterByPercentCloseOverRange(BigDecimal threshold) {
+	public StockFilter filterByPercentCloseOverRange(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		
@@ -294,7 +322,7 @@ public class StockAnalysis {
 	 * @param threshold
 	 * @return the Analysis object with all stocks that met the resistance threshold
 	 */
-	public StockAnalysis filterByResistance1(BigDecimal threshold) {
+	public StockFilter filterByResistance1(BigDecimal threshold) {
 		long startTime = System.nanoTime();
 		Map<String, List<StockRecord>> filtered = new HashMap<>();
 		
