@@ -91,7 +91,7 @@ public class StockFilterTest {
 		BigDecimal nearResistanceParam = new BigDecimal("-0.0005"); // 1+value * 100
 		
 		// loads 2 months of data
-		StockFilter analysis = new StockFilter(StockLoader.loadAllStockRecord(40));
+		StockFilter analysis = new StockFilter(StockLoader.loadStockRecords(40));
 		
 		analysis
 				.filterByInfo("%Change", gainParam)
@@ -115,7 +115,7 @@ public class StockFilterTest {
 		BigDecimal nearResistanceParam = new BigDecimal("-0.0005"); // 1+value * 100
 		
 		// loads 2 months of data
-		StockFilter analysis = new StockFilter(StockLoader.loadAllStockRecord(40));
+		StockFilter analysis = new StockFilter(StockLoader.loadStockRecords(40));
 		
 		analysis
 				.filterByInfo("%Change", gainParam)
@@ -137,7 +137,7 @@ public class StockFilterTest {
 		BigDecimal nearResistanceParam = new BigDecimal("-0.0005"); // 1+value * 100
 		
 		// gain only
-		StockFilter go = new StockFilter(StockLoader.loadAllStockRecord(40));
+		StockFilter go = new StockFilter(StockLoader.loadStockRecords(40));
 		StockFilter gainOnly = go.filterByInfo("%Change", gainParam);
 		
 		// volume spike
@@ -181,7 +181,7 @@ public class StockFilterTest {
 	@Test
 	public void testResistanceAndVSpike() {
 		// gain only
-		StockFilter go = new StockFilter(StockLoader.loadAllStockRecord(40));
+		StockFilter go = new StockFilter(StockLoader.loadStockRecords(40));
 		StockFilter gainOnly
 			= go.filterByInfo("%Change", new BigDecimal("0.005"));
 		
@@ -206,7 +206,7 @@ public class StockFilterTest {
 	
 	@Test
 	public void testResistance1() {
-		StockFilter sa = new StockFilter(StockLoader.loadAllStockRecord(40));
+		StockFilter sa = new StockFilter(StockLoader.loadStockRecords(40));
 		StockFilter nearResistance
 			= sa.filterByResistance1(new BigDecimal("-0.005"));
 		
@@ -216,7 +216,7 @@ public class StockFilterTest {
 	
 	@Test
 	public void testFilterByPercentCloseOverRange() {
-		StockFilter sa = new StockFilter(StockLoader.loadAllStockRecord(40));
+		StockFilter sa = new StockFilter(StockLoader.loadStockRecords(40));
 		
 		StockFilter result
 			= sa.filterByPercentCloseOverRange(new BigDecimal("0.9"));
@@ -246,7 +246,7 @@ public class StockFilterTest {
 	@Test
 	public void testVolumeSpikeAndLongestRange() {
 		// gain only
-		StockFilter sa1 = new StockFilter(StockLoader.loadAllStockRecord(40));
+		StockFilter sa1 = new StockFilter(StockLoader.loadStockRecords(40));
 		StockFilter gainOnly
 			= sa1.filterByInfo("%Change", new BigDecimal("3"));
 		
@@ -272,7 +272,7 @@ public class StockFilterTest {
 	@Test
 	public void testLongestRange() {
 		StockFilter longestRange
-			= new StockFilter(StockLoader.loadAllStockRecord(10));
+			= new StockFilter(StockLoader.loadStockRecords(10));
 		
 		StockFilter filtered
 			= longestRange.filterByLongestRange();
@@ -286,7 +286,7 @@ public class StockFilterTest {
 	@Test
 	public void testVolumeSpike() {
 		StockFilter volumeSpike
-			= new StockFilter(StockLoader.loadAllStockRecord(40));
+			= new StockFilter(StockLoader.loadStockRecords(40));
 		
 		StockFilter filtered
 			= volumeSpike.filterByVolumeSpike(new BigDecimal("1.5"));
@@ -297,7 +297,7 @@ public class StockFilterTest {
 	
 	@Test
 	public void test() {
-		StockFilter stockAnalysis = new StockFilter(StockLoader.loadAllStockRecord(1));
+		StockFilter stockAnalysis = new StockFilter(StockLoader.loadStockRecords(1));
 		StockFilter filteredStocks
 			= stockAnalysis.filterByInfo("%Change", new BigDecimal("10"));
 		

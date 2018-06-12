@@ -26,9 +26,21 @@ public class StockFilter {
 
 	private static final Logger logger = Logger.getLogger(StockFilter.class);
 	
+	private int depth;
 	private Map<String, List<StockRecord>> input;
 	private Map<String, List<StockRecord>> toProcess;
 
+	/**
+	 * Constructor to load all available stock codes at the given depth
+	 * 
+	 * @param depth
+	 */
+	public StockFilter(int depth) {
+		this.depth = depth;
+		this.input = StockLoader.loadStockRecords(depth);
+		this.toProcess = this.input;
+	}
+	
 	public StockFilter(Map<String, List<StockRecord>> input) {
 		this.input = input;
 		this.toProcess = input;

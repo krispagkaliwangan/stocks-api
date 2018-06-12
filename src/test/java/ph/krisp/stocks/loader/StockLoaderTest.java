@@ -24,7 +24,7 @@ public class StockLoaderTest {
 	
 	@Test
 	public void testLatestHelper() {
-		StockLoader.loadAllStockRecord(5);
+		StockLoader.loadStockRecords(5);
 		System.out.println(JsonUtils.objectToJson(StockLoader.getLatestHelper()));
 		System.out.println(JsonUtils.objectToJson(StockLoader.getLatestDate()));
 	}
