@@ -16,8 +16,9 @@ public class PredictionAnalysisTest {
 	@Test
 	public void testProcess() {
 		int depth = 40;
+		String[] stockCodes = {"SMPH", "JFC", "MEG", "NOW"};
 		Prediction prediction = new SimplePrediction();
-		StockFilter stockFilter = new StockFilter(depth);
+		StockFilter stockFilter = new StockFilter(stockCodes, depth);
 		PredictionAnalysis pa = new PredictionAnalysis(prediction, stockFilter);
 		
 		pa.process();

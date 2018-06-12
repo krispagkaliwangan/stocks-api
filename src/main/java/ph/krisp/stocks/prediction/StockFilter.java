@@ -41,6 +41,17 @@ public class StockFilter {
 		this.toProcess = this.input;
 	}
 	
+	/**
+	 * Constructor to load the given stock codes at the given depth
+	 * 
+	 * @param depth
+	 */
+	public StockFilter(String[] stockCodes, int depth) {
+		this.depth = depth;
+		this.input = StockLoader.loadStockRecords(stockCodes, depth);
+		this.toProcess = this.input;
+	}
+	
 	public StockFilter(Map<String, List<StockRecord>> input) {
 		this.input = input;
 		this.toProcess = input;
@@ -51,6 +62,10 @@ public class StockFilter {
 		this.toProcess = prevAnalysis.getOutput();
 	}
 	
+	public int getDepth() {
+		return depth;
+	}
+
 	public Map<String, List<StockRecord>> getInput() {
 		return this.input;
 	}
