@@ -248,20 +248,15 @@ public class StockFilter {
 		
 		// loop thru all
 		for(List<StockRecord> records : this.toProcess.values()) {
-			BigDecimal maxRange = BigDecimal.ZERO;
+			BigDecimal maxRange = new BigDecimal("0.0000001");
 			int lastIndex = records.size()-1;
 			// get range of each stockRecord and update max
-			for(int i=0; i<lastIndex; i++) {
+			for(int i=1; i<lastIndex; i++) {
 				BigDecimal range = records.get(i).getRange();
 				if(range.compareTo(maxRange) > 0) {
 					maxRange = range;
 				}
 			}
-			// check if range of latest is the maximum
-//			if(records.get(lastIndex).getRange().compareTo(maxRange) > 0) {
-//				// add if it is
-//				filtered.put(records.get(0).getCode(), records);
-//			}
 			
 			// check if range of latest is within the percentage
 			// threshold of maximum
